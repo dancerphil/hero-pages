@@ -1,0 +1,25 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "hero-pages-achievement",
+	"main": "src/server/index.ts",
+	"compatibility_date": "2026-10-15",
+	"assets": {
+		"directory": "dist/client",
+		"not_found_handling": "single-page-application",
+		"run_worker_first": [
+			"/api/*"
+		]
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "hero-pages-achievement",
+			"database_id": "86e89631-226a-479b-8ba6-2bf92c385c20",
+			"migrations_dir": "migrations"
+		}
+	],
+	"vars": {
+		"EMAIL_FROM": "成就 <noreply@dancerphil.com>"
+	},
+	"routes": [{ "pattern": "achievement.dancerphil.com", "custom_domain": true }]
+}

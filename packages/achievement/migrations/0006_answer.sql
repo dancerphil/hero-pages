@@ -1,0 +1,8 @@
+CREATE TABLE user_answer (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+  question_id INTEGER NOT NULL REFERENCES question(id) ON DELETE CASCADE,
+  answer TEXT NOT NULL,
+  passed INTEGER NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter @hero-pages/achievement dev",
-    "build": "pnpm --filter @hero-pages/achievement run build",
-    "deploy": "pnpm --filter @hero-pages/achievement run deploy",
+    "dev": "pnpm --filter @hero-pages/app dev",
+    "build": "pnpm --filter @hero-pages/app run build",
+    "deploy": "pnpm --filter @hero-pages/app run deploy",
     "lint": "eslint .",
     "lint-type": "pnpm -r --if-present run lint-type",
     "prepare": "husky"

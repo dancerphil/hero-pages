@@ -1,0 +1,8 @@
+CREATE TABLE novel (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  text_key TEXT NOT NULL,
+  paragraph INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

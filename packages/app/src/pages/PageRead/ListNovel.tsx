@@ -1,22 +1,22 @@
 import { useState } from 'react';
 import { Button, Group, Stack, Text, TextInput } from '@mantine/core';
-import type { Novel } from './db';
+import type { NovelRow } from '@/shared/novel';
 
 interface ListNovelProps {
-    novels: Novel[];
+    novels: NovelRow[];
     onOpen: (id: number) => void;
-    onRename: (novel: Novel, name: string) => void;
+    onRename: (id: number, name: string) => void;
 }
 
 export const ListNovel = ({ novels, onOpen, onRename }: ListNovelProps) => {
     const [editingId, setEditingId] = useState<number>();
     const [draft, setDraft] = useState('');
 
-    const commit = (novel: Novel) => {
+    const commit = (novel: NovelRow) => {
         const name = draft.trim();
         setEditingId(undefined);
         if (name && name !== novel.name) {
-            onRename(novel, name);
+            onRename(novel.id, name);
         }
     };
 

@@ -88,7 +88,3 @@ export const PageTrade = lazy(async () => {
     const m = await import('@/pages/PageTrade');
     return { default: m.PageTrade };
 });
-export const PageTools = lazy(async () => {
-    const m = await import('@/pages/PageTools');
-    return { default: m.PageTools };
-});

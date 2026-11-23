@@ -1,35 +1,41 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Button, Group, Popover, Stack, TextInput, UnstyledButton } from '@mantine/core';
 import { useElementSize, useMergedRef } from '@mantine/hooks';
-import { IconArrowLeft } from '@tabler/icons-react';
-import type { Novel } from './db';
-import { ReadSettings } from './ReadSettings';
-import { progressRegion, settingsRegion } from './region';
+import { fetchApi } from '@hero-pages/account/client';
+import { debounce } from 'lodash-es';
+import type { NovelDetail } from '@/shared/novel';
+import { BarNovel } from './BarNovel';
+import { settingsRegion } from './region';
 import c from './Read.module.css';
 import { findIndex, getOffsets } from './utils';
 
 const PADDING = 16;
 
 interface ViewNovelProps {
-    novel: Novel;
+    novel: NovelDetail;
     onBack: () => void;
-    onRename: (novel: Novel, name: string) => void;
+    onRename: (id: number, name: string) => void;
 }
 
 export const ViewNovel = ({ novel, onBack, onRename }: ViewNovelProps) => {
     const listRef = useRef<HTMLDivElement>(null);
     const { ref: sizeRef, width } = useElementSize<HTMLDivElement>();
     const ref = useMergedRef(sizeRef, listRef);
-    const indexRef = useRef(progressRegion.get()[novel.id] ?? 0);
+    const indexRef = useRef(novel.paragraph);
     const listTopRef = useRef(0);
     const [scrollTop, setScrollTop] = useState(0);
     const [viewHeight, setViewHeight] = useState(window.innerHeight);
-    const [expanded, setExpanded] = useState(false);
-    const [renaming, setRenaming] = useState(false);
-    const [draft, setDraft] = useState('');
     const { fontSize, lineHeight: lineHeightRatio, paragraphGap } = settingsRegion.useValue();
 
     const paragraphs = useMemo(() => novel.text.split(/\r?\n/).map(line => line.trim()).filter(Boolean), [novel.text]);
+
+    const saveProgress = useMemo(
+        () => debounce((paragraph: number) => fetchApi({ path: `/api/novels/${novel.id}`, method: 'PATCH', body: { paragraph } }), 1000),
+        [novel.id],
+    );
+
+    useEffect(() => () => {
+        saveProgress.flush();
+    }, [saveProgress]);
 
     const lineHeight = fontSize * lineHeightRatio;
     const charsPerLine = Math.max(1, Math.floor((width - PADDING * 2) / fontSize));
@@ -72,69 +78,21 @@ export const ViewNovel = ({ novel, onBack, onRename }: ViewNovelProps) => {
             const next = findIndex(offsets, top);
             if (next !== indexRef.current) {
                 indexRef.current = next;
-                progressRegion.set(progress => ({ ...progress, [novel.id]: next }));
+                saveProgress(next);
             }
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [offsets, novel.id]);
-
-    const openRename = () => {
-        setDraft(novel.name);
-        setRenaming(true);
-    };
-
-    const commitRename = () => {
-        const name = draft.trim();
-        setRenaming(false);
-        if (name && name !== novel.name) {
-            onRename(novel, name);
-        }
-    };
+    }, [offsets, saveProgress]);
 
     return (
         <>
-            <Group className={c.bar} gap={2}>
-                {expanded && (
-                    <>
-                        <UnstyledButton className={c.item} onClick={onBack} aria-label="返回">
-                            <IconArrowLeft size={14} />
-                        </UnstyledButton>
-                        <ReadSettings />
-                        <Popover
-                            opened={renaming}
-                            onChange={opened => (opened ? openRename() : commitRename())}
-                            position="bottom-end"
-                            withArrow
-                            shadow="md"
-                        >
-                            <Popover.Target>
-                                <UnstyledButton className={c.title} onClick={() => (renaming ? commitRename() : openRename())}>
-                                    <span className={c.titleText}>{novel.name}</span>
-                                </UnstyledButton>
-                            </Popover.Target>
-                            <Popover.Dropdown>
-                                <Stack gap={4}>
-                                    <TextInput
-                                        autoFocus
-                                        value={draft}
-                                        onChange={e => setDraft(e.currentTarget.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                commitRename();
-                                            }
-                                        }}
-                                    />
-                                    <Button size="xs" onClick={commitRename}>确认</Button>
-                                </Stack>
-                            </Popover.Dropdown>
-                        </Popover>
-                    </>
-                )}
-                <UnstyledButton className={c.item} onClick={() => setExpanded(!expanded)}>
-                    {Math.round(index / paragraphs.length * 100)}%
-                </UnstyledButton>
-            </Group>
+            <BarNovel
+                name={novel.name}
+                percent={Math.round(index / paragraphs.length * 100)}
+                onBack={onBack}
+                onRename={name => onRename(novel.id, name)}
+            />
             <div ref={ref} style={{ paddingTop: offsets[index], paddingBottom: offsets[paragraphs.length] - offsets[end], paddingInline: PADDING }}>
                 {paragraphs.slice(index, end).map((paragraph, i) => (
                     <p

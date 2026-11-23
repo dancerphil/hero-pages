@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Stack, Text } from '@mantine/core';
-import * as ort from 'onnxruntime-web';
+import * as ort from 'onnxruntime-web/wasm';
 import { gomokuMove } from '@hero-pages/games-core/ai/gomoku';
 import { checkWinAt } from '@hero-pages/games-core/ai/gomoku-board';
 import type { GomokuBoard, GomokuEvaluate, GomokuPlayer } from '@hero-pages/games-core/ai/gomoku';

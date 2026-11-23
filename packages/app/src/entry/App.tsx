@@ -34,7 +34,6 @@ import {
     PageOnePercent,
     PageRead,
     PageTlp,
-    PageTools,
     PageTrade,
 } from './AppLazyPages';
 import { AppPuzzle } from './AppPuzzle';
@@ -77,7 +76,6 @@ export function App() {
                     <Route path="one-percent" element={<PageOnePercent />} />
                     <Route path="read" element={<PageRead />} />
                     <Route path="tlp" element={<PageTlp />} />
-                    <Route path="tools" element={<PageTools />} />
                     <Route path="trade" element={<PageTrade />} />
                 </Routes>
             </Suspense>

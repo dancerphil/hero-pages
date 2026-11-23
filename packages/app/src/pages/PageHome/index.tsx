@@ -1,16 +1,11 @@
-import { Button, Container, Stack, Title } from '@mantine/core';
-import { useNavigate } from 'react-router';
+import { MantineProvider } from '@/components/MantineProvider';
+import '@/styles';
+import { Home } from './Home';
 
-export function PageHome() {
-    const navigate = useNavigate();
-    return (
-        <Container size="xs" py="xl">
-            <Stack>
-                <Title order={3} ta="center">dancerphil</Title>
-                <Button size="lg" onClick={() => navigate('/achievement')}>成就</Button>
-                <Button size="lg" variant="light" onClick={() => navigate('/puzzle')}>拼图</Button>
-                <Button size="lg" variant="light" onClick={() => navigate('/games')}>游戏</Button>
-            </Stack>
-        </Container>
-    );
-}
+export const PageHome = () => (
+    <div className="simplePage">
+        <MantineProvider>
+            <Home />
+        </MantineProvider>
+    </div>
+);

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Divider } from '@mantine/core';
 import { ShaderHeader } from '@/components/ShaderHeader';
 import { HeaderContent } from './HeaderContent';
@@ -36,14 +37,18 @@ export const Home = () => {
                     description="react 状态管理"
                 />
                 <ListItem
-                    href="https://github.com/dancerphil/dancerphil.github.io"
-                    title="dancerphil.github.io"
+                    href="https://github.com/dancerphil/hero-pages"
+                    title="dancerphil.com"
                     description="当前站点的源码"
                 />
 
                 <Divider my="lg" />
 
                 <div className={c.title}>随手写的玩具</div>
+                <ListItem
+                    href="./achievement"
+                    title="成就"
+                />
                 <ListItem
                     href="./ad-analyzer"
                     title="ad-analyzer"
@@ -85,6 +90,10 @@ export const Home = () => {
                     description="移除样式、保留结构和值的 HTML 清理器"
                 />
                 <ListItem
+                    href="./games"
+                    title="游戏"
+                />
+                <ListItem
                     href="./github-friends"
                     title="github 关系网"
                     description="用 echarts 关系图分析 github 关系，可以找朋友"
@@ -108,6 +117,10 @@ export const Home = () => {
                     href="./one-percent"
                     title="每天百分之一"
                     description="一个关于钱、时间和意义的增量游戏"
+                />
+                <ListItem
+                    href="./puzzle"
+                    title="拼图"
                 />
                 <ListItem
                     href="./read"

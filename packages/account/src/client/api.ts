@@ -1,4 +1,4 @@
-import type { UserRow } from '../server';
+import type { UserRow } from '../types';
 
 const DEVICE_ID_KEY = 'deviceId';
 

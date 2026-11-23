@@ -1,4 +1,4 @@
-import { titleKey, type QuestionInput } from './achievementModel';
+import { titleKey, type QuestionInput } from '@/shared/achievementModel';
 
 function questionValues(achievementId: number, question: QuestionInput) {
     return [

@@ -4,3 +4,7 @@ dist
 .env
 .dev.vars
 /packages/*/node_modules
+__pycache__/
+# gomoku training artifacts: local only (manifest.json is needed by the code)
+/packages/app/src/pages/PageGomoku/python/games/gomoku/checkpoints/*
+!/packages/app/src/pages/PageGomoku/python/games/gomoku/checkpoints/manifest.json

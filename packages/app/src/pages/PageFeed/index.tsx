@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Stack, Text } from '@mantine/core';
-import type { FeedQuestion } from '@/server/achievementModel';
+import { fetchApi } from '@hero-pages/account/client';
+import type { FeedQuestion } from '@/shared/achievementModel';
 import type { Tier } from '@/shared/tier';
 import { CardQuestion } from '@/modules/Feed/CardQuestion';
-import { fetchApi } from '@hero-pages/account/client';
 
 export function PageFeed(props: { onEdit: (achievementTitle: string) => void; onPassed: (tier: Tier, from: DOMRect) => void }) {
     const [items, setItems] = useState<FeedQuestion[]>([]);

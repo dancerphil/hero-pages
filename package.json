@@ -4,9 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "ln -sf .env .dev.vars",
     "dev": "pnpm --filter @hero-pages/app dev",
     "build": "pnpm --filter @hero-pages/app run build",
-    "deploy": "pnpm --filter @hero-pages/app run deploy",
+    "deploy:production": "pnpm build && wrangler deploy",
+    "pretypes": "ln -sf .env .dev.vars",
+    "types": "wrangler types --path packages/app/worker-configuration.d.ts",
     "lint": "eslint .",
     "lint-type": "pnpm -r --if-present run lint-type",
     "prepare": "husky"
@@ -20,7 +23,8 @@
     "eslint-plugin-unicorn": "^72.0.0",
     "globals": "^17.7.0",
     "husky": "^9.1.7",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "wrangler": "^4.157.0"
   },
   "packageManager": "pnpm@11.8.0"
 }

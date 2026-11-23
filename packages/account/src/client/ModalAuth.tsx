@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Anchor, Button, Group, Modal, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
-import type { UserRow } from '../server';
+import type { UserRow } from '../types';
 import { fetchApi } from './api';
 
 type AuthMode = 'login' | 'register' | 'reset';

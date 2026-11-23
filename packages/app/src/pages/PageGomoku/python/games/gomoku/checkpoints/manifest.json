@@ -1,0 +1,35 @@
+{
+    "heuristic-v3": {
+        "builtin": true
+    },
+    "nn-v5-a1": {
+        "checkpoint": "v5-a1/best.pth"
+    },
+    "nn-v5-a2": {
+        "checkpoint": "v5-a2/best.pth"
+    },
+    "nn-v5-a3": {
+        "checkpoint": "v5-a3/best.pth"
+    },
+    "mix-v5-h3": {
+        "policy": "nn-v5-a3",
+        "value": {
+            "nn-v5-a3": 0.5,
+            "heuristic-v3": 0.5
+        }
+    },
+    "nn-v6-base": {
+        "checkpoint": "v6-base/best.pth"
+    },
+    "nn-v6-full": {
+        "checkpoint": "v6-full/best.pth"
+    },
+    "mix-v6-h3": {
+        "policy": "nn-v6-full",
+        "value": {
+            "nn-v6-full": 0.25,
+            "heuristic-v3": 0.75
+        },
+        "c_puct": 0.8
+    }
+}

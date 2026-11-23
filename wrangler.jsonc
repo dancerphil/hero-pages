@@ -1,10 +1,10 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "hero-pages",
-	"main": "src/server/index.ts",
+	"main": "packages/app/src/server/index.ts",
 	"compatibility_date": "2026-10-15",
 	"assets": {
-		"directory": "dist/client",
+		"directory": "packages/app/dist/client",
 		"not_found_handling": "single-page-application",
 		"run_worker_first": [
 			"/api/*"
@@ -15,7 +15,7 @@
 			"binding": "DB",
 			"database_name": "hero-pages",
 			"database_id": "4ccbe196-479e-4631-b697-4e49634f44e3",
-			"migrations_dir": "../../migrations"
+			"migrations_dir": "migrations"
 		}
 	],
 	"r2_buckets": [
@@ -23,6 +23,16 @@
 			"binding": "IMAGES",
 			"bucket_name": "hero-pages-images"
 		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{ "name": "GAME_ROOM", "class_name": "GameRoom" },
+			{ "name": "GAME_LOBBY", "class_name": "GameLobby" }
+		]
+	},
+	"migrations": [
+		{ "tag": "v1", "new_sqlite_classes": ["GameRoom"] },
+		{ "tag": "v2", "new_sqlite_classes": ["GameLobby"] }
 	],
 	"vars": {
 		"EMAIL_FROM": "dancerphil <noreply@dancerphil.com>"

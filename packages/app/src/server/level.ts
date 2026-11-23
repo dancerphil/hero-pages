@@ -1,19 +1,12 @@
 import { Hono } from 'hono';
 import { requireUser, type AppEnv } from '@hero-pages/account/server';
-
-export interface LevelRow {
-    id: number;
-    name: string;
-    rows: number;
-    cols: number;
-    createdAt: string;
-}
+import type { LevelRow } from '@/shared/level';
 
 const LEVEL_COLUMNS = 'id, name, rows, cols, created_at AS createdAt';
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
-const isSide = (value: number) => Number.isInteger(value) && value >= 2 && value <= 10;
+const isSide = (value: number) => Number.isSafeInteger(value) && value >= 2 && value <= 10;
 
 export const levelRoutes = new Hono<AppEnv>()
     .get('/', requireUser, async (c) => {

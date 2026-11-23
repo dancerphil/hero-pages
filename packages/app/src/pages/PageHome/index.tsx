@@ -9,6 +9,7 @@ export function PageHome() {
                 <Title order={3} ta="center">dancerphil</Title>
                 <Button size="lg" onClick={() => navigate('/achievement')}>成就</Button>
                 <Button size="lg" variant="light" onClick={() => navigate('/puzzle')}>拼图</Button>
+                <Button size="lg" variant="light" onClick={() => navigate('/games')}>游戏</Button>
             </Stack>
         </Container>
     );

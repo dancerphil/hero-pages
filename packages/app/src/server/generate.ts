@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
+import { requireUser, type AppEnv } from '@hero-pages/account/server';
 import { TIERS } from '@/shared/tier';
-import { chat } from '@/ai/chat';
 import { buildDetailsPrompt, buildQuestionPrompt, buildTitlesPrompt } from '@/ai/prompt';
 import { normalizeAchievements, normalizeTitles } from '@/ai/normalize';
-import { validateQuestions, type GeneratedAchievement } from './achievementModel';
+import { validateQuestions, type GeneratedAchievement } from '@/shared/achievementModel';
+import { chat } from './chat';
 import { createAchievement } from './achievementStore';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
 
 const MAX_COUNT = 10;
 

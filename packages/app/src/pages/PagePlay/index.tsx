@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Button, Group, Loader, Stack, Text, Title } from '@mantine/core';
 import { useParams } from 'react-router';
-import type { LevelRow } from '@/server/level';
 import { fetchApi } from '@hero-pages/account/client';
+import type { LevelRow } from '@/shared/level';
 import { CanvasPuzzle } from '@/components/Canvas/CanvasPuzzle';
 
 export function PagePlay() {

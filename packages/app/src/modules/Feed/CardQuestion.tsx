@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Badge, Button, Card, Group, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
-import type { FeedQuestion } from '@/server/achievementModel';
+import type { FeedQuestion } from '@/shared/achievementModel';
 import { submitAnswer } from '@/modules/Answer/FormAnswer';
 import { TIER_META } from '@/utils/tier';
 

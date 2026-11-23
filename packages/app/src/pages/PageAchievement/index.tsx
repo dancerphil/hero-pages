@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Badge, Button, Group, Stack, Text, Title } from '@mantine/core';
-import type { AchievementDetail } from '@/server/achievementModel';
+import { fetchApi } from '@hero-pages/account/client';
+import type { AchievementDetail } from '@/shared/achievementModel';
 import { ModalAnswer } from '@/modules/Answer/ModalAnswer';
 import { BadgeTier } from '@/ui/BadgeTier';
 import { ModalMerge } from '@/components/Modal/ModalMerge';
-import { fetchApi } from '@hero-pages/account/client';
 import { sortByTier } from '@/utils/tier';
 
 type Question = AchievementDetail['questions'][number];

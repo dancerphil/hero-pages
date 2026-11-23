@@ -1,0 +1,49 @@
+import { useRef, useLayoutEffect, useEffect, type FC } from 'react';
+import { init, type EChartsType } from 'echarts';
+import { type Node, type Link } from '../types';
+import { getOptions } from './getOptions';
+import c from './Graph.module.css';
+
+let chart: EChartsType | null = null;
+
+interface Props {
+    nodes: Node[];
+    links: Link[];
+}
+
+export const Graph: FC<Props> = ({ nodes, links }) => {
+    const ref = useRef<HTMLDivElement>(null);
+    useLayoutEffect(
+        () => {
+            if (ref.current) {
+                // eslint-disable-next-line unicorn/no-top-level-assignment-in-function
+                chart = init(ref.current, {
+                    color: [
+                        '#5470c6',
+                        '#ee6666',
+                        '#73c0de',
+                        '#3ba272',
+                        '#91cc75',
+                        '#fac858',
+                        '#cccccc',
+                        // '#9a60b4',
+                        // '#ea7ccc',
+                    ],
+                });
+            }
+        },
+        [],
+    );
+
+    useEffect(
+        () => {
+            if (chart) {
+                const options = getOptions(nodes, links);
+                chart.setOption(options);
+            }
+        },
+        [nodes, links],
+    );
+
+    return <div className={c.container} ref={ref} />;
+};

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Button, Radio, Stack, Textarea, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import type { Tier } from '@/shared/tier';
 import { fetchApi } from '@hero-pages/account/client';
+import type { Tier } from '@/shared/tier';
 
 export interface AnswerQuestion {
     tier: Tier;

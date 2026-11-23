@@ -1,0 +1,185 @@
+/* eslint-disable max-lines */
+import { Button, Stack } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
+import { KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { v4 } from 'uuid';
+import { ResizeLayout } from '@/components/ResizeLayout';
+import { type Category, type AssetItem } from './types';
+import { STORAGE_KEY, defaultCategories, defaultAssetItems } from './constants';
+import s from './styles.module.css';
+import { CategorySection } from './CategorySection';
+import { AssetItemSection } from './AssetItemSection';
+import { AddAssetItemForm } from './AddAssetItemForm';
+import { SankeyChart } from './SankeyChart';
+
+interface CapitalData {
+    categories: Category[];
+    assetItems: AssetItem[];
+}
+
+export const Capital = () => {
+    const [data, setData] = useLocalStorage<CapitalData>({
+        key: STORAGE_KEY,
+        defaultValue: {
+            categories: defaultCategories,
+            assetItems: defaultAssetItems,
+        },
+    });
+
+    const categories = data.categories;
+    const assetItems = data.assetItems;
+
+    const setCategories = (updater: Category[] | ((prev: Category[]) => Category[])) => {
+        setData(prevData => ({
+            ...prevData,
+            categories: typeof updater === 'function' ? updater(prevData.categories) : updater,
+        }));
+    };
+
+    const setAssetItems = (updater: AssetItem[] | ((prev: AssetItem[]) => AssetItem[])) => {
+        setData(prevData => ({
+            ...prevData,
+            assetItems: typeof updater === 'function' ? updater(prevData.assetItems) : updater,
+        }));
+    };
+
+    // DnD sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
+    // 添加类别
+    const handleAddCategory = (name: string) => {
+        setCategories([...categories, { id: v4(), name }]);
+    };
+
+    // 删除类别
+    const handleDeleteCategory = (id: string) => {
+        setData(prevData => ({
+            categories: prevData.categories.filter(c => c.id !== id),
+            assetItems: prevData.assetItems.filter(item => item.category !== id),
+        }));
+    };
+
+    // 添加资产项
+    const handleAddItem = (item: Omit<AssetItem, 'id'>) => {
+        setAssetItems([...assetItems, { id: v4(), ...item }]);
+    };
+
+    // 删除资产项
+    const handleDeleteItem = (id: string) => {
+        setAssetItems(assetItems.filter(item => item.id !== id));
+    };
+
+    // 更新资产项名称
+    const handleUpdateName = (id: string, name: string) => {
+        setAssetItems(assetItems.map(item => item.id === id ? { ...item, name } : item));
+    };
+
+    // 更新资产项类别
+    const handleUpdateCategory = (id: string, category: string) => {
+        setAssetItems(assetItems.map(item => item.id === id ? { ...item, category } : item));
+    };
+
+    // 更新资产项金额
+    const handleUpdateAmount = (id: string, amount: number | string) => {
+        const numAmount = typeof amount === 'number' ? amount : Number(amount) || 0;
+        setAssetItems(assetItems.map(item => item.id === id ? { ...item, amount: numAmount } : item));
+    };
+
+    // 处理类别拖拽排序
+    const handleCategoryDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setCategories((items) => {
+                const oldIndex = items.findIndex(item => item.id === active.id);
+                const newIndex = items.findIndex(item => item.id === over.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    };
+
+    // 处理资产项拖拽排序
+    const handleAssetItemDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setAssetItems((items) => {
+                const oldIndex = items.findIndex(item => item.id === active.id);
+                const newIndex = items.findIndex(item => item.id === over.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    };
+
+    const leftPanel = (
+        <div className={s.leftPanel}>
+            <Stack gap="lg">
+                <CategorySection
+                    categories={categories}
+                    sensors={sensors}
+                    onDragEnd={handleCategoryDragEnd}
+                    onAdd={handleAddCategory}
+                    onDelete={handleDeleteCategory}
+                />
+
+                <AssetItemSection
+                    assetItems={assetItems}
+                    categories={categories}
+                    sensors={sensors}
+                    onDragEnd={handleAssetItemDragEnd}
+                    onUpdateName={handleUpdateName}
+                    onUpdateCategory={handleUpdateCategory}
+                    onUpdateAmount={handleUpdateAmount}
+                    onDelete={handleDeleteItem}
+                />
+
+                <AddAssetItemForm
+                    categories={categories}
+                    onAdd={handleAddItem}
+                />
+
+                <div className={s.section}>
+                    <Button
+                        variant="outline"
+                        color="gray"
+                        onClick={() => {
+                            if (confirm('确定要重置所有数据吗？')) {
+                                setData({
+                                    categories: defaultCategories,
+                                    assetItems: defaultAssetItems,
+                                });
+                            }
+                        }}
+                        fullWidth
+                    >
+                        重置为默认数据
+                    </Button>
+                </div>
+            </Stack>
+        </div>
+    );
+
+    const rightPanel = (
+        <div className={s.rightPanel}>
+            <SankeyChart assetItems={assetItems} categories={categories} />
+        </div>
+    );
+
+    return (
+        <div className={s.container}>
+            <ResizeLayout
+                groupId="capital-layout"
+                left={leftPanel}
+                right={rightPanel}
+                leftProps={{ defaultSize: 30, min: 20 }}
+                rightProps={{ defaultSize: 70, min: 30 }}
+            />
+        </div>
+    );
+};

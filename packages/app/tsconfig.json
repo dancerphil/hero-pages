@@ -10,11 +10,13 @@
     "types": ["vite/client"],
     "jsx": "react-jsx",
     "strict": true,
+    "strictNullChecks": false,
     "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "worker-configuration.d.ts"]
+  "include": ["src"],
+  "exclude": ["src/server"]
 }

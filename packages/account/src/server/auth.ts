@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
+import type { UserRow } from '../types';
 import { hashPassword, randomDigits, verifyPassword } from './crypto';
 import { consumeEmailCode, sendEmailCode, type CodePurpose } from './emailCode';
-import { createSession, deleteSession, findSessionUser, requireUser, type AppEnv, type UserRow } from './session';
+import { createSession, deleteSession, findSessionUser, requireUser, type AppEnv } from './session';
 
 const USER_COLUMNS = 'id, uid, username, email, is_admin';
 const UID_PATTERN = /^[\w-]{3,32}$/;

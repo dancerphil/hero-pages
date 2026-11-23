@@ -1,5 +1,5 @@
 import { Badge, Button, Table } from '@mantine/core';
-import type { AnswerRecord } from '@/server/user';
+import type { AnswerRecord } from '@/shared/user';
 import { BadgeTier } from '@/ui/BadgeTier';
 
 export function TableAnswers(props: { answers: AnswerRecord[]; onEdit: (record: AnswerRecord) => void }) {

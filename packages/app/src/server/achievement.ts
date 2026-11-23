@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { createAchievement, findByTitle, mergeAchievement, upsertQuestion } from './achievementStore';
-import { parseOptions, pickChoices, titleKey, validateQuestions, type AchievementDetail, type FeedQuestion, type QuestionInput, type QuestionRow } from './achievementModel';
 import { requireUser, type AppEnv } from '@hero-pages/account/server';
+import { parseOptions, pickChoices, titleKey, validateQuestions, type AchievementDetail, type FeedQuestion, type QuestionInput, type QuestionRow } from '@/shared/achievementModel';
+import { createAchievement, findByTitle, mergeAchievement, upsertQuestion } from './achievementStore';
 
 export const achievementRoutes = new Hono<AppEnv>()
     .get('/', requireUser, async (c) => {

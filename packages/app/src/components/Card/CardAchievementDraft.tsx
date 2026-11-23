@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Button, Card, Checkbox, Group, ActionIcon, SegmentedControl, Stack, Text, TextInput } from '@mantine/core';
 import { IconPlus, IconX } from '@tabler/icons-react';
-import type { GeneratedAchievement, QuestionInput } from '@/server/achievementModel';
+import type { GeneratedAchievement, QuestionInput } from '@/shared/achievementModel';
 import { BadgeTier } from '@/ui/BadgeTier';
 import { sortByTier } from '@/utils/tier';
 import { changeKind, emptyQuestion } from '@/utils/achievementDraft';

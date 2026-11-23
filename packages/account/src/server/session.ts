@@ -1,19 +1,12 @@
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
+import type { UserRow } from '../types';
 import { randomToken } from './crypto';
 
 export interface AppEnv {
     Bindings: Env;
     Variables: { user: UserRow };
-}
-
-export interface UserRow {
-    id: number;
-    uid: string;
-    username: string;
-    email: string | null;
-    is_admin: number;
 }
 
 const SESSION_COOKIE = 'session';

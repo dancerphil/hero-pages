@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Container, Group, Text } from '@mantine/core';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
-import type { UserRow } from '@hero-pages/account/server';
-import { fetchApi, loadUser, ModalAuth } from '@hero-pages/account/client';
+import { fetchApi, loadUser, ModalAuth, type UserRow } from '@hero-pages/account/client';
 import { PageLevels } from '@/pages/PageLevels';
 import { PageNewLevel } from '@/pages/PageNewLevel';
 import { PagePlay } from '@/pages/PagePlay';

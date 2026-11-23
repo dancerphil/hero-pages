@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Group, Image, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useNavigate } from 'react-router';
-import type { LevelRow } from '@/server/level';
 import { fetchApi } from '@hero-pages/account/client';
+import type { LevelRow } from '@/shared/level';
 
 export function PageLevels() {
     const navigate = useNavigate();

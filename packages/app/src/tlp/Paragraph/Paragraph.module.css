@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  overflow: hidden;
+  gap: 60px;
+
+  &:global(.active) {
+    background-color: #f0f8ff;
+    border-color: #d0e7ff;
+    border-radius: 4px;
+  }
+
+  &:global(.related) {
+    background-color: #f4faff;
+  }
+
+  &:global(.hide) {
+    display: none;
+  }
+
+  &:global(.collapsed) {
+    border-bottom: 4px solid #f2f2f2;
+  }
+}
+
+.key {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.cn {
+  flex: 0.9 0 0;
+}
+
+.en {
+  flex: 1 0 0;
+}
+
+.de {
+  flex: 1.1 0 0;
+}

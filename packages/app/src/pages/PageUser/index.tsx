@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Card, SimpleGrid, Stack, Table, Tabs, Text, TextInput, Title } from '@mantine/core';
 import { useParams } from 'react-router';
-import type { UserRow } from '@hero-pages/account/server';
-import type { AnswerRecord, UserPage } from '@/server/user';
+import type { UserRow } from '@hero-pages/account/client';
+import { fetchApi } from '@hero-pages/account/client';
+import type { AnswerRecord, UserPage } from '@/shared/user';
 import { ModalAnswer } from '@/modules/Answer/ModalAnswer';
 import { BadgeTier } from '@/ui/BadgeTier';
-import { fetchApi } from '@hero-pages/account/client';
 import { TIERS_DESC } from '@/utils/tier';
 import { SectionProfile } from './SectionProfile';
 import { TableAnswers } from './TableAnswers';

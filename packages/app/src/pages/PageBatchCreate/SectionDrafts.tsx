@@ -2,9 +2,9 @@ import { type Dispatch, type SetStateAction, useState } from 'react';
 import { Button, Checkbox } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconTrash } from '@tabler/icons-react';
-import type { GeneratedAchievement, QuestionInput } from '@/server/achievementModel';
-import { CardAchievementDraft } from '@/components/Card/CardAchievementDraft';
 import { fetchApi } from '@hero-pages/account/client';
+import type { GeneratedAchievement, QuestionInput } from '@/shared/achievementModel';
+import { CardAchievementDraft } from '@/components/Card/CardAchievementDraft';
 
 export type Draft = GeneratedAchievement & { key: number; selected: boolean };
 

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Button, Stack, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import type { GeneratedAchievement } from '@/server/achievementModel';
+import { fetchApi } from '@hero-pages/account/client';
+import type { GeneratedAchievement } from '@/shared/achievementModel';
 import { CardAchievementDraft } from '@/components/Card/CardAchievementDraft';
 import { normalizeAchievement } from '@/utils/achievementDraft';
-import { fetchApi } from '@hero-pages/account/client';
 
 export function PageAchievementForm(props: { id?: number; onSaved: (title: string) => void }) {
     const [draft, setDraft] = useState<GeneratedAchievement>({ title: '', questions: [] });

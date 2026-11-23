@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Button, Container, Group, Text } from '@mantine/core';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router';
-import type { UserRow } from '@hero-pages/account/server';
-import type { UserPage } from '@/server/user';
+import { fetchApi, loadUser, ModalAuth, type UserRow } from '@hero-pages/account/client';
+import type { UserPage } from '@/shared/user';
 import type { Tier } from '@/shared/tier';
-import { fetchApi, loadUser, ModalAuth } from '@hero-pages/account/client';
 import { BadgeCount } from '@/components/Badge/BadgeCount';
 import { BadgeFly } from '@/components/Badge/BadgeFly';
 import { PageBatchCreate } from '@/pages/PageBatchCreate';

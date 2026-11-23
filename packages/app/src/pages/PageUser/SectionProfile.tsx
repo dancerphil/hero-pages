@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Group, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router';
-import type { UserRow } from '@hero-pages/account/server';
+import type { UserRow } from '@hero-pages/account/client';
 import { fetchApi } from '@hero-pages/account/client';
 
 export function SectionProfile(props: { user: UserRow; onUserChange: (user: UserRow) => void; onSaved: () => void }) {

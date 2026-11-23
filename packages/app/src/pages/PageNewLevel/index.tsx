@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, FileInput, Group, Image, NumberInput, Stack, Text, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router';
@@ -10,16 +10,15 @@ export function PageNewLevel() {
     const [cols, setCols] = useState<number | string>(4);
     const [rows, setRows] = useState<number | string>(4);
     const [file, setFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string>();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const preview = useMemo(() => (file ? URL.createObjectURL(file) : undefined), [file]);
+
     useEffect(() => {
-        if (!file) return;
-        const url = URL.createObjectURL(file);
-        setPreview(url);
-        return () => URL.revokeObjectURL(url);
-    }, [file]);
+        if (!preview) return;
+        return () => URL.revokeObjectURL(preview);
+    }, [preview]);
 
     async function submit() {
         if (!file) return;

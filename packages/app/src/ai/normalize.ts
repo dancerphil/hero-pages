@@ -1,5 +1,5 @@
 import { TIERS } from '@/shared/tier';
-import type { GeneratedAchievement, QuestionInput } from '@/server/achievementModel';
+import type { GeneratedAchievement, QuestionInput } from '@/shared/achievementModel';
 
 export function normalizeTitles(data: unknown) {
     const list = (data as { titles?: unknown }).titles;

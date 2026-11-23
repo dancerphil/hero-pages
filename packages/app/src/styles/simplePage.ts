@@ -1,0 +1,1 @@
+import './simplePage.css';

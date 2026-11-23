@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useRef } from 'react';
 import { Box } from '@mantine/core';
-import { PuzzleBoard } from '@/game/PuzzleBoard';
+import { createPuzzleBoard } from '@/game/PuzzleBoard';
 
 export function CanvasPuzzle(props: { src: string; cols: number; rows: number; onComplete: () => void }) {
     const ref = useRef<HTMLCanvasElement>(null);
@@ -10,16 +10,20 @@ export function CanvasPuzzle(props: { src: string; cols: number; rows: number; o
         const canvas = ref.current;
         if (!canvas) return;
         const image = new Image();
-        let board: PuzzleBoard | undefined;
+        let board: ReturnType<typeof createPuzzleBoard> | undefined;
         const observer = new ResizeObserver(([entry]) => {
             board?.resize(entry.contentRect.width, entry.contentRect.height);
         });
-        image.addEventListener('load', () => {
-            board = new PuzzleBoard({ canvas, image, cols: props.cols, rows: props.rows, onComplete });
+        const onLoad = () => {
+            board = createPuzzleBoard({ canvas, image, cols: props.cols, rows: props.rows, onComplete });
             observer.observe(canvas);
-        });
+        };
+        image.addEventListener('load', onLoad);
         image.src = props.src;
-        return () => observer.disconnect();
+        return () => {
+            image.removeEventListener('load', onLoad);
+            observer.disconnect();
+        };
     }, [props.src, props.cols, props.rows]);
 
     return (

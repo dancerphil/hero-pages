@@ -1,4 +1,4 @@
-import type { GeneratedAchievement, QuestionInput } from '@/server/achievementModel';
+import type { GeneratedAchievement, QuestionInput } from '@/shared/achievementModel';
 import type { Tier } from '@/shared/tier';
 
 function defaultKind(tier: Tier): QuestionInput['kind'] {

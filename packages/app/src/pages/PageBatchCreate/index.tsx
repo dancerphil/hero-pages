@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Button, Group, NumberInput, Stack, Text, Textarea, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import type { GeneratedAchievement } from '@/server/achievementModel';
-import { normalizeAchievement } from '@/utils/achievementDraft';
 import { fetchApi } from '@hero-pages/account/client';
+import type { GeneratedAchievement } from '@/shared/achievementModel';
+import { normalizeAchievement } from '@/utils/achievementDraft';
 import { type Draft, SectionDrafts } from './SectionDrafts';
 import { type NameDraft, SectionNames } from './SectionNames';
 

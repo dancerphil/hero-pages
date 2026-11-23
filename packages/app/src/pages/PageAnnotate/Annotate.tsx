@@ -1,0 +1,50 @@
+import { useState } from 'react';
+import { Sandpack } from '@codesandbox/sandpack-react';
+import { Modal } from '@mantine/core';
+import { useShortKey } from 'use-short-key';
+import { Markdown } from '@hero-u/mantine';
+import App from './App?raw';
+import useCsv from './useCsv?raw';
+import Component from './Component?raw';
+import md from './Annotate.md?raw';
+
+const files = {
+    '/App.tsx': App,
+    '/useCsv.tsx': useCsv,
+    '/Component.tsx': Component,
+};
+
+export const Annotate = () => {
+    const [open, setOpen] = useState(false);
+    useShortKey({
+        metaKey: true,
+        code: 'KeyK',
+        keydown: () => {
+            setOpen(open => !open);
+        },
+    });
+    return (
+        <>
+            <Sandpack
+                template="react-ts"
+                files={files}
+                customSetup={{
+                    dependencies: {
+                        'papaparse': 'latest',
+                        'react-simple-code-editor': 'latest',
+                        'prismjs': 'latest',
+                    },
+                }}
+                options={{
+                    editorHeight: '100vh',
+                }}
+            />
+            <Modal
+                opened={open}
+                onClose={() => setOpen(false)}
+            >
+                <Markdown>{md}</Markdown>
+            </Modal>
+        </>
+    );
+};

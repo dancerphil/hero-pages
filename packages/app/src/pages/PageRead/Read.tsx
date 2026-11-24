@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router';
 import { Button, FileButton, Group, Stack } from '@mantine/core';
 import type { NovelRow } from '@/shared/novel';
 import { userRegion } from '@/regions/user';
-import { ListNovel } from './ListNovel';
+import { ListNovel, type NovelItem } from './ListNovel';
 import { getNovelRows, putNovel, updateNovelRow } from './db';
-import { syncNovels } from './sync';
+import { downloadNovel, syncNovels, uploadNovel } from './sync';
 
 const decode = async (file: File) => {
     const buffer = await file.arrayBuffer();
@@ -21,25 +21,22 @@ export const Read = () => {
     const navigate = useNavigate();
     const user = userRegion.useValue();
     const [novels, setNovels] = useState<NovelRow[]>([]);
+    const [remoteNovels, setRemoteNovels] = useState<NovelRow[]>([]);
 
     const refresh = useCallback(async () => {
         setNovels(await getNovelRows());
         if (user) {
-            await syncNovels();
+            setRemoteNovels(await syncNovels());
             setNovels(await getNovelRows());
+        }
+        else {
+            setRemoteNovels([]);
         }
     }, [user]);
 
     useEffect(() => {
-        const load = async () => {
-            setNovels(await getNovelRows());
-            if (user) {
-                await syncNovels();
-                setNovels(await getNovelRows());
-            }
-        };
-        load();
-    }, [user]);
+        refresh();
+    }, [refresh]);
 
     const handleFile = async (file: File | null) => {
         if (!file) return;
@@ -52,15 +49,36 @@ export const Read = () => {
         setNovels(await getNovelRows());
     };
 
+    const handleUpload = async (row: NovelRow) => {
+        await uploadNovel(row);
+        refresh();
+    };
+
+    const handleDownload = async (row: NovelRow) => {
+        await downloadNovel(row);
+        refresh();
+    };
+
+    const localUuids = new Set(novels.map(row => row.uuid));
+    const remoteUuids = new Set(remoteNovels.map(row => row.uuid));
+    const items: NovelItem[] = [
+        ...novels.map(row => ({ row, local: true, remote: remoteUuids.has(row.uuid) })),
+        ...remoteNovels.filter(row => !localUuids.has(row.uuid)).map(row => ({ row, local: false, remote: true })),
+    ].toSorted((a, b) => b.row.updatedAt - a.row.updatedAt);
+
     return (
         <Stack p="md">
             <Group justify="flex-end">
-                <Button variant="default" onClick={refresh}>同步</Button>
                 <FileButton accept="text/plain" onChange={handleFile}>
                     {props => <Button {...props}>新增小说</Button>}
                 </FileButton>
             </Group>
-            <ListNovel novels={novels} onOpen={uuid => navigate(`/read/${uuid}`)} onRename={handleRename} />
+            <ListNovel
+                items={items}
+                transfer={user ? { onUpload: handleUpload, onDownload: handleDownload } : undefined}
+                onOpen={uuid => navigate(`/read/${uuid}`)}
+                onRename={handleRename}
+            />
         </Stack>
     );
 };

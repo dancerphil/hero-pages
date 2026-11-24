@@ -2,13 +2,23 @@ import { useState } from 'react';
 import { Button, Group, Stack, Text, TextInput } from '@mantine/core';
 import type { NovelRow } from '@/shared/novel';
 
+export interface NovelItem {
+    row: NovelRow;
+    local: boolean;
+    remote: boolean;
+}
+
 interface ListNovelProps {
-    novels: NovelRow[];
+    items: NovelItem[];
+    transfer?: {
+        onUpload: (row: NovelRow) => void;
+        onDownload: (row: NovelRow) => void;
+    };
     onOpen: (uuid: string) => void;
     onRename: (uuid: string, name: string) => void;
 }
 
-export const ListNovel = ({ novels, onOpen, onRename }: ListNovelProps) => {
+export const ListNovel = ({ items, transfer, onOpen, onRename }: ListNovelProps) => {
     const [editingId, setEditingId] = useState<string>();
     const [draft, setDraft] = useState('');
 
@@ -22,14 +32,14 @@ export const ListNovel = ({ novels, onOpen, onRename }: ListNovelProps) => {
 
     return (
         <Stack>
-            {novels.map(novel => (
-                <Group key={novel.uuid} justify="space-between">
-                    {editingId === novel.uuid ? (
+            {items.map(({ row, local, remote }) => (
+                <Group key={row.uuid} justify="space-between">
+                    {editingId === row.uuid ? (
                         <TextInput
                             autoFocus
                             value={draft}
                             onChange={e => setDraft(e.currentTarget.value)}
-                            onBlur={() => commit(novel)}
+                            onBlur={() => commit(row)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     e.currentTarget.blur();
@@ -37,19 +47,29 @@ export const ListNovel = ({ novels, onOpen, onRename }: ListNovelProps) => {
                             }}
                         />
                     ) : (
-                        <Text>{novel.name}</Text>
+                        <Text>{row.name}</Text>
                     )}
                     <Group>
-                        <Button
-                            variant="default"
-                            onClick={() => {
-                                setEditingId(novel.uuid);
-                                setDraft(novel.name);
-                            }}
-                        >
-                            改名
-                        </Button>
-                        <Button onClick={() => onOpen(novel.uuid)}>打开</Button>
+                        {transfer && local && !remote && (
+                            <Button variant="default" onClick={() => transfer.onUpload(row)}>上传</Button>
+                        )}
+                        {transfer && remote && !local && (
+                            <Button variant="default" onClick={() => transfer.onDownload(row)}>下载</Button>
+                        )}
+                        {local && (
+                            <>
+                                <Button
+                                    variant="default"
+                                    onClick={() => {
+                                        setEditingId(row.uuid);
+                                        setDraft(row.name);
+                                    }}
+                                >
+                                    改名
+                                </Button>
+                                <Button onClick={() => onOpen(row.uuid)}>打开</Button>
+                            </>
+                        )}
                     </Group>
                 </Group>
             ))}

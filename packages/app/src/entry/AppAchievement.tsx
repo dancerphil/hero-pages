@@ -81,7 +81,7 @@ export function AppAchievement() {
                         )}
                     />
                     <Route path="new" element={<PageBatchCreate onDone={() => navigate('/achievement')} />} />
-                    <Route path=":name" element={<PageNamed isAdmin={Boolean(user.is_admin)} />} />
+                    <Route path=":name" element={<PageNamed isAdmin={user.role === 'admin'} />} />
                 </Routes>
             )}
             {user && passing && !passing.landed && (

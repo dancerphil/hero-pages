@@ -21,18 +21,20 @@ export const novelRoutes = new Hono<AppEnv>()
         return c.json(novel);
     })
     .get('/:id', requireUser, async (c) => {
-        const row = await c.env.DB.prepare('SELECT id, name, paragraph, text_key FROM novel WHERE id = ? AND user_id = ?')
+        const row = await c.env.DB.prepare('SELECT id, name, paragraph FROM novel WHERE id = ? AND user_id = ?')
             .bind(c.req.param('id'), c.get('user').id)
-            .first<{ id: number; name: string; paragraph: number; text_key: string }>();
+            .first<NovelDetail>();
+        if (!row) return c.json({ error: '小说不存在' }, 404);
+        return c.json(row);
+    })
+    .get('/:id/text', requireUser, async (c) => {
+        const row = await c.env.DB.prepare('SELECT text_key FROM novel WHERE id = ? AND user_id = ?')
+            .bind(c.req.param('id'), c.get('user').id)
+            .first<{ text_key: string }>();
         if (!row) return c.json({ error: '小说不存在' }, 404);
         const object = await c.env.IMAGES.get(row.text_key);
         if (!object) return c.json({ error: '正文不存在' }, 404);
-        return c.json({
-            id: row.id,
-            name: row.name,
-            paragraph: row.paragraph,
-            text: await object.text(),
-        } satisfies NovelDetail);
+        return c.json({ text: await object.text() });
     })
     .patch('/:id', requireUser, async (c) => {
         const { name, paragraph } = await c.req.json<{ name?: string; paragraph?: number }>();

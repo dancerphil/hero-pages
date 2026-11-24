@@ -1,7 +1,7 @@
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
-import type { UserRow } from '../types';
+import type { UserRole, UserRow } from '../types';
 import { randomToken } from './crypto';
 
 export interface AppEnv {
@@ -16,7 +16,7 @@ export async function findSessionUser(c: Context<AppEnv>) {
     const sessionId = getCookie(c, SESSION_COOKIE);
     if (!sessionId) return null;
     return c.env.DB.prepare(
-        `SELECT user.id, user.uid, user.username, user.email, user.is_admin, user.avatar_updated_at
+        `SELECT user.id, user.uid, user.username, user.email, user.role, user.avatar_updated_at
          FROM session JOIN user ON user.id = session.user_id
          WHERE session.id = ? AND session.expires_at > datetime('now')`,
     )
@@ -44,9 +44,14 @@ export async function deleteSession(c: Context<AppEnv>) {
     deleteCookie(c, SESSION_COOKIE, { path: '/' });
 }
 
-export const requireUser = createMiddleware<AppEnv>(async (c, next) => {
+const ROLE_RANK: Record<UserRole, number> = { user: 0, vip: 1, admin: 2 };
+
+export const requireRole = (role: UserRole) => createMiddleware<AppEnv>(async (c, next) => {
     const user = await findSessionUser(c);
     if (!user) return c.json({ error: '未登录' }, 401);
+    if (ROLE_RANK[user.role] < ROLE_RANK[role]) return c.json({ error: '无权限' }, 403);
     c.set('user', user);
     await next();
 });
+
+export const requireUser = requireRole('user');

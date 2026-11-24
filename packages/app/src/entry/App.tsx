@@ -4,6 +4,7 @@ import { Notifications } from '@mantine/notifications';
 import { matchRoutes, useLocation, useRoutes } from 'react-router';
 import { MenuNav } from '@/components/Menu/MenuNav';
 import { loadUser } from '@/regions/user';
+import { clearStaleNovelText } from '@/pages/PageRead/cache';
 import { routes } from './routes';
 
 export function App() {
@@ -12,6 +13,7 @@ export function App() {
 
     useEffect(() => {
         loadUser();
+        clearStaleNovelText();
     }, []);
 
     useEffect(() => {

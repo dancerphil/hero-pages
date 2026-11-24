@@ -12,11 +12,12 @@ const PADDING = 16;
 
 interface ViewNovelProps {
     novel: NovelDetail;
+    text: string;
     onBack: () => void;
     onRename: (name: string) => void;
 }
 
-export const ViewNovel = ({ novel, onBack, onRename }: ViewNovelProps) => {
+export const ViewNovel = ({ novel, text, onBack, onRename }: ViewNovelProps) => {
     const listRef = useRef<HTMLDivElement>(null);
     const { ref: sizeRef, width } = useElementSize<HTMLDivElement>();
     const ref = useMergedRef(sizeRef, listRef);
@@ -26,7 +27,7 @@ export const ViewNovel = ({ novel, onBack, onRename }: ViewNovelProps) => {
     const [viewHeight, setViewHeight] = useState(window.innerHeight);
     const { fontSize, lineHeight: lineHeightRatio, paragraphGap } = settingsRegion.useValue();
 
-    const paragraphs = useMemo(() => novel.text.split(/\r?\n/).map(line => line.trim()).filter(Boolean), [novel.text]);
+    const paragraphs = useMemo(() => text.split(/\r?\n/).map(line => line.trim()).filter(Boolean), [text]);
 
     const saveProgress = useMemo(
         () => debounce((paragraph: number) => fetchApi({ path: `/api/novels/${novel.id}`, method: 'PATCH', body: { paragraph } }), 1000),

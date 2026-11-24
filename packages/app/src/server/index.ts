@@ -1,6 +1,7 @@
 import { createAuthRoutes, type AppEnv, type MergeUser } from '@hero-pages/account/server';
 import { Hono } from 'hono';
 import { achievementRoutes } from './achievement';
+import { adminRoutes } from './admin';
 import { aiRoutes } from './ai';
 import { answerRoutes } from './answer';
 import { gameRoutes } from './gameRoute';
@@ -32,6 +33,7 @@ app.route('/api/achievements', achievementRoutes);
 app.route('/api/achievements', answerRoutes);
 app.route('/api/levels', levelRoutes);
 app.route('/api/novels', novelRoutes);
+app.route('/api/admin', adminRoutes);
 app.route('/api/games', gameRoutes);
 app.route('/api/ai', aiRoutes);
 

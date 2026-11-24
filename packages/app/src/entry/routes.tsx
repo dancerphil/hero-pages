@@ -8,6 +8,7 @@ import { PageBossTornado } from '@/pages/PageBossTornado';
 import { PageHome } from '@/pages/PageHome';
 import { PagePoetryHeart } from '@/pages/PagePoetryHeart';
 import { AppAchievement } from './AppAchievement';
+import { AppAdmin } from './AppAdmin';
 import { AppGames } from './AppGames';
 import { AppMedals } from './AppMedals';
 import { AppUser } from './AppUser';
@@ -40,6 +41,7 @@ import { AppPuzzle } from './AppPuzzle';
 export const routes: RouteObject[] = [
     { index: true, element: <PageHome />, handle: { title: '张振衣' } },
     { path: 'achievement/*', element: <AppAchievement /> },
+    { path: 'admin/*', element: <AppAdmin /> },
     { path: 'medals/*', element: <AppMedals /> },
     { path: 'user/*', element: <AppUser /> },
     { path: 'puzzle/*', element: <AppPuzzle /> },

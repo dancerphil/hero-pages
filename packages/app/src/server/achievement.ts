@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
+import { requireRole, requireUser, type AppEnv } from '@hero-pages/account/server';
 import { parseOptions, pickChoices, titleKey, validateQuestions, type AchievementDetail, type FeedQuestion, type QuestionInput, type QuestionRow } from '@/shared/achievementModel';
 import { createAchievement, findByTitle, mergeAchievement, upsertQuestion } from './achievementStore';
 
@@ -112,16 +112,14 @@ export const achievementRoutes = new Hono<AppEnv>()
         ]);
         return c.json({ id });
     })
-    .post('/:id/merge', requireUser, async (c) => {
-        if (!c.get('user').is_admin) return c.json({ error: '无权限' }, 403);
+    .post('/:id/merge', requireRole('admin'), async (c) => {
         const sourceId = Number(c.req.param('id'));
         const { targetId } = await c.req.json<{ targetId: number }>();
         if (sourceId === targetId) return c.json({ error: '不能合并到自己' }, 400);
         await mergeAchievement(c.env.DB, { sourceId, targetId });
         return c.json({ id: targetId });
     })
-    .delete('/:id', requireUser, async (c) => {
-        if (!c.get('user').is_admin) return c.json({ error: '无权限' }, 403);
+    .delete('/:id', requireRole('admin'), async (c) => {
         await c.env.DB.prepare('DELETE FROM achievement WHERE id = ?').bind(Number(c.req.param('id'))).run();
         return c.json({ ok: true });
     });

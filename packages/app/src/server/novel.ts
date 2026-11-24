@@ -1,49 +1,40 @@
 import { Hono } from 'hono';
 import { requireUser, type AppEnv } from '@hero-pages/account/server';
-import type { NovelDetail, NovelRow } from '@/shared/novel';
-
-const NOVEL_COLUMNS = 'id, name, created_at AS createdAt';
+import type { NovelRow } from '@/shared/novel';
 
 export const novelRoutes = new Hono<AppEnv>()
     .get('/', requireUser, async (c) => {
-        const { results } = await c.env.DB.prepare(`SELECT ${NOVEL_COLUMNS} FROM novel WHERE user_id = ? ORDER BY id`)
+        const { results } = await c.env.DB.prepare('SELECT uuid, name, paragraph, updated_at AS updatedAt FROM novel WHERE user_id = ?')
             .bind(c.get('user').id)
             .all<NovelRow>();
         return c.json(results);
     })
     .post('/', requireUser, async (c) => {
-        const { name, text } = await c.req.json<{ name: string; text: string }>();
-        const textKey = `novels/${c.get('user').id}/${crypto.randomUUID()}`;
+        const { uuid, name, text, paragraph, updatedAt } = await c.req.json<NovelRow & { text: string }>();
+        const userId = c.get('user').id;
+        const textKey = `novels/${userId}/${uuid}`;
         await c.env.IMAGES.put(textKey, text, { httpMetadata: { contentType: 'text/plain; charset=utf-8' } });
-        const novel = await c.env.DB.prepare(`INSERT INTO novel (user_id, name, text_key) VALUES (?, ?, ?) RETURNING ${NOVEL_COLUMNS}`)
-            .bind(c.get('user').id, name, textKey)
-            .first<NovelRow>();
-        return c.json(novel);
+        await c.env.DB.prepare('INSERT INTO novel (user_id, uuid, name, text_key, paragraph, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
+            .bind(userId, uuid, name, textKey, paragraph, updatedAt)
+            .run();
+        return c.json({ ok: true });
     })
-    .get('/:id', requireUser, async (c) => {
-        const row = await c.env.DB.prepare('SELECT id, name, paragraph FROM novel WHERE id = ? AND user_id = ?')
-            .bind(c.req.param('id'), c.get('user').id)
-            .first<NovelDetail>();
-        if (!row) return c.json({ error: '小说不存在' }, 404);
-        return c.json(row);
-    })
-    .get('/:id/text', requireUser, async (c) => {
-        const row = await c.env.DB.prepare('SELECT text_key FROM novel WHERE id = ? AND user_id = ?')
-            .bind(c.req.param('id'), c.get('user').id)
+    .get('/:uuid/text', requireUser, async (c) => {
+        const row = await c.env.DB.prepare('SELECT text_key FROM novel WHERE uuid = ? AND user_id = ?')
+            .bind(c.req.param('uuid'), c.get('user').id)
             .first<{ text_key: string }>();
         if (!row) return c.json({ error: '小说不存在' }, 404);
         const object = await c.env.IMAGES.get(row.text_key);
         if (!object) return c.json({ error: '正文不存在' }, 404);
         return c.json({ text: await object.text() });
     })
-    .patch('/:id', requireUser, async (c) => {
-        const { name, paragraph } = await c.req.json<{ name?: string; paragraph?: number }>();
+    .patch('/:uuid', requireUser, async (c) => {
+        const { name, paragraph, updatedAt } = await c.req.json<NovelRow>();
         const row = await c.env.DB.prepare(
-            `UPDATE novel SET name = COALESCE(?, name), paragraph = COALESCE(?, paragraph)
-             WHERE id = ? AND user_id = ? RETURNING ${NOVEL_COLUMNS}`,
+            'UPDATE novel SET name = ?, paragraph = ?, updated_at = ? WHERE uuid = ? AND user_id = ? RETURNING uuid',
         )
-            .bind(name ?? null, paragraph ?? null, c.req.param('id'), c.get('user').id)
-            .first<NovelRow>();
+            .bind(name, paragraph, updatedAt, c.req.param('uuid'), c.get('user').id)
+            .first();
         if (!row) return c.json({ error: '小说不存在' }, 404);
-        return c.json(row);
+        return c.json({ ok: true });
     });

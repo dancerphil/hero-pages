@@ -25,8 +25,8 @@ export const adminRoutes = new Hono<AppEnv>()
     })
     .get('/novels', requireRole('admin'), async (c) => {
         const { results } = await c.env.DB.prepare(
-            `SELECT novel.id, novel.name, novel.paragraph, novel.created_at AS createdAt, user.username, user.uid
-             FROM novel JOIN user ON user.id = novel.user_id ORDER BY novel.id`,
+            `SELECT novel.uuid, novel.name, novel.paragraph, novel.created_at AS createdAt, user.username, user.uid
+             FROM novel JOIN user ON user.id = novel.user_id ORDER BY novel.created_at`,
         )
             .all<AdminNovelRow>();
         return c.json(results);

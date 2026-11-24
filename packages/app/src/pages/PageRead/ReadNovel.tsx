@@ -1,41 +1,44 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { fetchApi } from '@hero-pages/account/client';
-import type { NovelDetail } from '@/shared/novel';
+import { Text } from '@mantine/core';
+import type { NovelRow } from '@/shared/novel';
 import { userRegion } from '@/regions/user';
 import { ViewNovel } from './ViewNovel';
-import { loadNovelText } from './cache';
+import { getNovel, updateNovelRow } from './db';
+import { syncNovels } from './sync';
 
-export const ReadNovel = ({ id }: { id: number }) => {
+export const ReadNovel = ({ uuid }: { uuid: string }) => {
     const navigate = useNavigate();
     const user = userRegion.useValue();
-    const [novel, setNovel] = useState<NovelDetail>();
-    const [text, setText] = useState<string>();
+    const [novel, setNovel] = useState<{ row: NovelRow; text: string } | null>();
 
     useEffect(() => {
         async function load() {
-            const fetchText = async () => {
-                const { text } = await fetchApi<{ text: string }>({ path: `/api/novels/${id}/text`, method: 'GET' });
-                return text;
-            };
-            setNovel(await fetchApi<NovelDetail>({ path: `/api/novels/${id}`, method: 'GET' }));
-            setText(await loadNovelText(id, fetchText));
+            const found = await getNovel(uuid);
+            if (found) {
+                setNovel(found);
+                return;
+            }
+            if (!user) return;
+            await syncNovels();
+            setNovel((await getNovel(uuid)) ?? null);
         }
-        if (user) load();
-    }, [id, user]);
+        load();
+    }, [uuid, user]);
 
     const handleRename = async (name: string) => {
-        await fetchApi({ path: `/api/novels/${id}`, method: 'PATCH', body: { name } });
-        setNovel(prev => prev && { ...prev, name });
+        await updateNovelRow(uuid, { name });
+        setNovel(prev => prev && { ...prev, row: { ...prev.row, name } });
     };
 
-    if (!novel || text === undefined) return null;
+    if (novel === undefined) return null;
+    if (novel === null) return <Text p="md">小说不存在</Text>;
 
     return (
         <ViewNovel
-            key={novel.id}
-            novel={novel}
-            text={text}
+            key={uuid}
+            novel={novel.row}
+            text={novel.text}
             onBack={() => navigate('/read')}
             onRename={handleRename}
         />

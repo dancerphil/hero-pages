@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Button, FileButton, Group, Stack, Text } from '@mantine/core';
-import { fetchApi, ModalAuth } from '@hero-pages/account/client';
+import { Button, FileButton, Group, Stack } from '@mantine/core';
 import type { NovelRow } from '@/shared/novel';
-import { logout, userRegion } from '@/regions/user';
+import { userRegion } from '@/regions/user';
 import { ListNovel } from './ListNovel';
+import { getNovelRows, putNovel, updateNovelRow } from './db';
+import { syncNovels } from './sync';
 
 const decode = async (file: File) => {
     const buffer = await file.arrayBuffer();
@@ -19,56 +20,47 @@ const decode = async (file: File) => {
 export const Read = () => {
     const navigate = useNavigate();
     const user = userRegion.useValue();
-    const [authOpened, setAuthOpened] = useState(false);
     const [novels, setNovels] = useState<NovelRow[]>([]);
 
-    useEffect(() => {
-        async function load() {
-            setNovels(await fetchApi<NovelRow[]>({ path: '/api/novels', method: 'GET' }));
+    const refresh = useCallback(async () => {
+        setNovels(await getNovelRows());
+        if (user) {
+            await syncNovels();
+            setNovels(await getNovelRows());
         }
-        if (user) load();
+    }, [user]);
+
+    useEffect(() => {
+        const load = async () => {
+            setNovels(await getNovelRows());
+            if (user) {
+                await syncNovels();
+                setNovels(await getNovelRows());
+            }
+        };
+        load();
     }, [user]);
 
     const handleFile = async (file: File | null) => {
         if (!file) return;
-        const novel = await fetchApi<NovelRow>({ path: '/api/novels', body: { name: file.name, text: await decode(file) } });
-        setNovels(prev => [...prev, novel]);
+        await putNovel({ uuid: crypto.randomUUID(), name: file.name, paragraph: 0, updatedAt: Date.now() }, await decode(file));
+        refresh();
     };
 
-    const handleRename = async (id: number, name: string) => {
-        await fetchApi({ path: `/api/novels/${id}`, method: 'PATCH', body: { name } });
-        setNovels(prev => prev.map(item => (item.id === id ? { ...item, name } : item)));
+    const handleRename = async (uuid: string, name: string) => {
+        await updateNovelRow(uuid, { name });
+        setNovels(await getNovelRows());
     };
 
     return (
         <Stack p="md">
-            <Group justify="space-between">
-                <Text fw={600}>我的小说</Text>
-                <Group>
-                    {user && (
-                        <>
-                            <Text>{user.username}</Text>
-                            {user.email ? (
-                                <Button variant="subtle" onClick={logout}>退出</Button>
-                            ) : (
-                                <Button variant="subtle" onClick={() => setAuthOpened(true)}>登录 / 注册</Button>
-                            )}
-                        </>
-                    )}
-                    <FileButton accept="text/plain" onChange={handleFile}>
-                        {props => <Button {...props}>上传小说</Button>}
-                    </FileButton>
-                </Group>
+            <Group justify="flex-end">
+                <Button variant="default" onClick={refresh}>同步</Button>
+                <FileButton accept="text/plain" onChange={handleFile}>
+                    {props => <Button {...props}>新增小说</Button>}
+                </FileButton>
             </Group>
-            <ListNovel novels={novels} onOpen={id => navigate(`/read/${id}`)} onRename={handleRename} />
-            <ModalAuth
-                opened={authOpened}
-                onClose={() => setAuthOpened(false)}
-                onSuccess={(next) => {
-                    userRegion.set(next);
-                    setAuthOpened(false);
-                }}
-            />
+            <ListNovel novels={novels} onOpen={uuid => navigate(`/read/${uuid}`)} onRename={handleRename} />
         </Stack>
     );
 };

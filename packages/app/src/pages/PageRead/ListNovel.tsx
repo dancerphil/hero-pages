@@ -4,27 +4,27 @@ import type { NovelRow } from '@/shared/novel';
 
 interface ListNovelProps {
     novels: NovelRow[];
-    onOpen: (id: number) => void;
-    onRename: (id: number, name: string) => void;
+    onOpen: (uuid: string) => void;
+    onRename: (uuid: string, name: string) => void;
 }
 
 export const ListNovel = ({ novels, onOpen, onRename }: ListNovelProps) => {
-    const [editingId, setEditingId] = useState<number>();
+    const [editingId, setEditingId] = useState<string>();
     const [draft, setDraft] = useState('');
 
     const commit = (novel: NovelRow) => {
         const name = draft.trim();
         setEditingId(undefined);
         if (name && name !== novel.name) {
-            onRename(novel.id, name);
+            onRename(novel.uuid, name);
         }
     };
 
     return (
         <Stack>
             {novels.map(novel => (
-                <Group key={novel.id} justify="space-between">
-                    {editingId === novel.id ? (
+                <Group key={novel.uuid} justify="space-between">
+                    {editingId === novel.uuid ? (
                         <TextInput
                             autoFocus
                             value={draft}
@@ -43,13 +43,13 @@ export const ListNovel = ({ novels, onOpen, onRename }: ListNovelProps) => {
                         <Button
                             variant="default"
                             onClick={() => {
-                                setEditingId(novel.id);
+                                setEditingId(novel.uuid);
                                 setDraft(novel.name);
                             }}
                         >
                             改名
                         </Button>
-                        <Button onClick={() => onOpen(novel.id)}>打开</Button>
+                        <Button onClick={() => onOpen(novel.uuid)}>打开</Button>
                     </Group>
                 </Group>
             ))}

@@ -26,7 +26,7 @@ export const PageAdminNovels = () => {
                 </Table.Thead>
                 <Table.Tbody>
                     {novels.map(novel => (
-                        <Table.Tr key={novel.id}>
+                        <Table.Tr key={novel.uuid}>
                             <Table.Td>{novel.username}（{novel.uid}）</Table.Td>
                             <Table.Td>{novel.name}</Table.Td>
                             <Table.Td>第 {novel.paragraph} 段</Table.Td>

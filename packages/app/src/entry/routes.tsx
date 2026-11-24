@@ -72,7 +72,7 @@ export const routes: RouteObject[] = [
     { path: 'mine', element: <PageMine />, handle: { title: '扫雷' } },
     { path: 'name-generator', element: <PageNameGenerator />, handle: { title: 'name-generator' } },
     { path: 'one-percent', element: <PageOnePercent />, handle: { title: '每天百分之一' } },
-    { path: 'read/:id?', element: <PageRead />, handle: { title: 'read' } },
+    { path: 'read/:uuid?', element: <PageRead />, handle: { title: 'read' } },
     { path: 'tlp', element: <PageTlp />, handle: { title: '逻辑哲学论' } },
     { path: 'trade', element: <PageTrade />, handle: { title: 'trade agents' } },
 ];

@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useElementSize, useMergedRef } from '@mantine/hooks';
-import { fetchApi } from '@hero-pages/account/client';
 import { debounce } from 'lodash-es';
-import type { NovelDetail } from '@/shared/novel';
+import type { NovelRow } from '@/shared/novel';
 import { BarNovel } from './BarNovel';
+import { updateNovelRow } from './db';
 import { settingsRegion } from './region';
 import c from './Read.module.css';
 import { findIndex, getOffsets } from './utils';
@@ -11,7 +11,7 @@ import { findIndex, getOffsets } from './utils';
 const PADDING = 16;
 
 interface ViewNovelProps {
-    novel: NovelDetail;
+    novel: NovelRow;
     text: string;
     onBack: () => void;
     onRename: (name: string) => void;
@@ -30,8 +30,8 @@ export const ViewNovel = ({ novel, text, onBack, onRename }: ViewNovelProps) => 
     const paragraphs = useMemo(() => text.split(/\r?\n/).map(line => line.trim()).filter(Boolean), [text]);
 
     const saveProgress = useMemo(
-        () => debounce((paragraph: number) => fetchApi({ path: `/api/novels/${novel.id}`, method: 'PATCH', body: { paragraph } }), 1000),
-        [novel.id],
+        () => debounce((paragraph: number) => updateNovelRow(novel.uuid, { paragraph }), 1000),
+        [novel.uuid],
     );
 
     useEffect(() => () => {

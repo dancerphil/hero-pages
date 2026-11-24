@@ -5,11 +5,11 @@ import { Read } from './Read';
 import { ReadNovel } from './ReadNovel';
 
 export const PageRead = () => {
-    const { id } = useParams();
+    const { uuid } = useParams();
     return (
         <div className="simplePage">
             <MantineProvider>
-                {id ? <ReadNovel id={Number(id)} /> : <Read />}
+                {uuid ? <ReadNovel uuid={uuid} /> : <Read />}
             </MantineProvider>
         </div>
     );

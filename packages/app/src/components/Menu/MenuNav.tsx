@@ -14,7 +14,7 @@ export function MenuNav(props: { routes: RouteObject[] }) {
 
     const paths = props.routes.map(route => (route.index ? '/' : `/${route.path?.replace(/\/\*$/, '')}`));
 
-    if (matchPath('/read/:id', pathname)) {
+    if (matchPath('/read/:uuid', pathname)) {
         return null;
     }
 

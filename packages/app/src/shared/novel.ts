@@ -1,17 +1,12 @@
 export interface NovelRow {
-    id: number;
-    name: string;
-    createdAt: string;
-}
-
-export interface NovelDetail {
-    id: number;
+    uuid: string;
     name: string;
     paragraph: number;
+    updatedAt: number;
 }
 
 export interface AdminNovelRow {
-    id: number;
+    uuid: string;
     name: string;
     paragraph: number;
     createdAt: string;

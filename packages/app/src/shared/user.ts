@@ -4,6 +4,7 @@ import type { Tier } from './tier';
 export interface UserPage {
     uid: string;
     username: string;
+    avatarUpdatedAt: string | null;
     unlocks: MineUnlock[];
 }
 

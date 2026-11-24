@@ -6,13 +6,10 @@ import type { UserRow } from '@hero-pages/account/client';
 import { fetchApi } from '@hero-pages/account/client';
 import { GAMES } from '@/constants/games';
 import { useGameSocket } from '@/hooks/useGameSocket';
+import { userRegion } from '@/regions/user';
 
-interface PageGamesHomeProps {
-    user: UserRow;
-    onUserChange: (user: UserRow) => void;
-}
-
-export function PageGamesHome({ user, onUserChange }: PageGamesHomeProps) {
+export function PageGamesHome(props: { user: UserRow }) {
+    const { user } = props;
     const navigate = useNavigate();
     const [username, setUsername] = useState(user.username);
     const [roomId, setRoomId] = useState('');
@@ -24,7 +21,7 @@ export function PageGamesHome({ user, onUserChange }: PageGamesHomeProps) {
     }
 
     async function saveUsername() {
-        onUserChange(await fetchApi<UserRow>({ path: '/api/auth/me', method: 'PATCH', body: { username } }));
+        userRegion.set(await fetchApi<UserRow>({ path: '/api/auth/me', method: 'PATCH', body: { username } }));
     }
 
     return (

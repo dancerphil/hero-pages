@@ -10,6 +10,9 @@
     "deploy:production": "pnpm build && wrangler deploy",
     "pretypes": "ln -sf .env .dev.vars",
     "types": "wrangler types --path packages/app/worker-configuration.d.ts",
+    "sync:db": "pnpm sync:d1 && pnpm sync:r2",
+    "sync:r2": "node scripts/sync-r2.ts",
+    "sync:d1": "wrangler d1 export hero-pages --remote -y --no-data --output=.wrangler/tmp/schema.sql && wrangler d1 export hero-pages --remote -y --no-schema --output=.wrangler/tmp/data.sql && rm -rf .wrangler/state/v3/d1 && wrangler d1 execute hero-pages --local --file=.wrangler/tmp/schema.sql && wrangler d1 execute hero-pages --local --file=.wrangler/tmp/data.sql",
     "lint": "eslint .",
     "lint-type": "pnpm -r --if-present run lint-type",
     "prepare": "husky"

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Container, Group, Text } from '@mantine/core';
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router';
-import { fetchApi, loadUser, ModalAuth, type UserRow } from '@hero-pages/account/client';
+import { Route, Routes, useLocation, useNavigate } from 'react-router';
+import { fetchApi, ModalAuth } from '@hero-pages/account/client';
 import type { UserPage } from '@/shared/user';
 import type { Tier } from '@/shared/tier';
 import { BadgeCount } from '@/components/Badge/BadgeCount';
@@ -9,16 +9,16 @@ import { BadgeFly } from '@/components/Badge/BadgeFly';
 import { PageBatchCreate } from '@/pages/PageBatchCreate';
 import { PageFeed } from '@/pages/PageFeed';
 import { PageNamed } from '@/pages/PageNamed';
-import { PageUser } from '@/pages/PageUser';
 import { TIERS_DESC } from '@/utils/tier';
+import { logout, userRegion } from '@/regions/user';
 
-async function loadUnlocks(uid: string) {
+async function fetchUnlocks(uid: string) {
     const page = await fetchApi<UserPage>({ path: `/api/users/${uid}`, method: 'GET' });
     return page.unlocks;
 }
 
 export function AppAchievement() {
-    const [user, setUser] = useState<UserRow | null>(null);
+    const user = userRegion.useValue();
     const [authOpened, setAuthOpened] = useState(false);
     const [unlocks, setUnlocks] = useState<UserPage['unlocks']>([]);
     const [passing, setPassing] = useState<{ tier: Tier; from: DOMRect; landed: boolean } | null>(null);
@@ -26,15 +26,8 @@ export function AppAchievement() {
     const { pathname } = useLocation();
 
     useEffect(() => {
-        async function load() {
-            setUser(await loadUser());
-        }
-        load();
-    }, []);
-
-    useEffect(() => {
         async function load(uid: string) {
-            setUnlocks(await loadUnlocks(uid));
+            setUnlocks(await fetchUnlocks(uid));
         }
         if (user) load(user.uid);
     }, [user, pathname]);
@@ -42,13 +35,8 @@ export function AppAchievement() {
     async function landPass(uid: string) {
         setPassing(prev => prev && { ...prev, landed: true });
         await new Promise(resolve => setTimeout(resolve, 800));
-        setUnlocks(await loadUnlocks(uid));
+        setUnlocks(await fetchUnlocks(uid));
         setPassing(null);
-    }
-
-    async function logout() {
-        await fetchApi({ path: '/api/auth/logout' });
-        setUser(await loadUser());
     }
 
     return (
@@ -60,7 +48,7 @@ export function AppAchievement() {
                 </Group>
                 {user && (
                     <Group>
-                        <Button variant="subtle" color="gray" onClick={() => navigate(`/achievement/user/${user.uid}`)}>
+                        <Button variant="subtle" color="gray" onClick={() => navigate(`/medals/${user.uid}`)}>
                             <Group gap="xs">
                                 {TIERS_DESC.map(tier => (
                                     <BadgeCount
@@ -92,18 +80,7 @@ export function AppAchievement() {
                             />
                         )}
                     />
-                    <Route
-                        path="user/:uid"
-                        element={(
-                            <PageUser
-                                user={user}
-                                onUserChange={setUser}
-                                onAnswered={() => loadUnlocks(user.uid)}
-                            />
-                        )}
-                    />
                     <Route path="new" element={<PageBatchCreate onDone={() => navigate('/achievement')} />} />
-                    <Route path="user" element={<Navigate to="/achievement" replace />} />
                     <Route path=":name" element={<PageNamed isAdmin={Boolean(user.is_admin)} />} />
                 </Routes>
             )}
@@ -114,7 +91,7 @@ export function AppAchievement() {
                 opened={authOpened}
                 onClose={() => setAuthOpened(false)}
                 onSuccess={(next) => {
-                    setUser(next);
+                    userRegion.set(next);
                     setAuthOpened(false);
                 }}
             />

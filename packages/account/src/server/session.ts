@@ -16,7 +16,7 @@ export async function findSessionUser(c: Context<AppEnv>) {
     const sessionId = getCookie(c, SESSION_COOKIE);
     if (!sessionId) return null;
     return c.env.DB.prepare(
-        `SELECT user.id, user.uid, user.username, user.email, user.is_admin
+        `SELECT user.id, user.uid, user.username, user.email, user.is_admin, user.avatar_updated_at
          FROM session JOIN user ON user.id = session.user_id
          WHERE session.id = ? AND session.expires_at > datetime('now')`,
     )

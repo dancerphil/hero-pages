@@ -11,7 +11,7 @@ export function getDeviceId() {
     return deviceId;
 }
 
-export async function loadUser() {
+export async function fetchUser() {
     const response = await fetch('/api/auth/me');
     if (response.ok) return (await response.json()) as UserRow;
     return fetchApi<UserRow>({ path: '/api/auth/device-login', body: { deviceId: getDeviceId() } });

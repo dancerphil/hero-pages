@@ -1,28 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Container, Group, Text } from '@mantine/core';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
-import { fetchApi, loadUser, ModalAuth, type UserRow } from '@hero-pages/account/client';
+import { ModalAuth } from '@hero-pages/account/client';
 import { PageLevels } from '@/pages/PageLevels';
 import { PageNewLevel } from '@/pages/PageNewLevel';
 import { PagePlay } from '@/pages/PagePlay';
+import { logout, userRegion } from '@/regions/user';
 
 export function AppPuzzle() {
-    const [user, setUser] = useState<UserRow | null>(null);
+    const user = userRegion.useValue();
     const [authOpened, setAuthOpened] = useState(false);
     const navigate = useNavigate();
     const { pathname } = useLocation();
-
-    useEffect(() => {
-        async function load() {
-            setUser(await loadUser());
-        }
-        load();
-    }, []);
-
-    async function logout() {
-        await fetchApi({ path: '/api/auth/logout' });
-        setUser(await loadUser());
-    }
 
     return (
         <Container size="md" px="sm">
@@ -53,7 +42,7 @@ export function AppPuzzle() {
                 opened={authOpened}
                 onClose={() => setAuthOpened(false)}
                 onSuccess={(next) => {
-                    setUser(next);
+                    userRegion.set(next);
                     setAuthOpened(false);
                 }}
             />

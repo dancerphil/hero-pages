@@ -4,7 +4,7 @@ import { hashPassword, randomDigits, verifyPassword } from './crypto';
 import { consumeEmailCode, sendEmailCode, type CodePurpose } from './emailCode';
 import { createSession, deleteSession, findSessionUser, requireUser, type AppEnv } from './session';
 
-const USER_COLUMNS = 'id, uid, username, email, is_admin';
+const USER_COLUMNS = 'id, uid, username, email, is_admin, avatar_updated_at';
 const UID_PATTERN = /^[\w-]{3,32}$/;
 
 export type MergeUser = (c: { env: Env }, input: { from: number; to: number }) => Promise<void>;

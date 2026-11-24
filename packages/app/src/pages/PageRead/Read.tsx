@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Button, FileButton, Group, Stack, Text } from '@mantine/core';
-import { fetchApi, loadUser, ModalAuth, type UserRow } from '@hero-pages/account/client';
+import { fetchApi, ModalAuth } from '@hero-pages/account/client';
 import type { NovelDetail, NovelRow } from '@/shared/novel';
+import { logout, userRegion } from '@/regions/user';
 import { ListNovel } from './ListNovel';
 import { ViewNovel } from './ViewNovel';
+import { readingRegion } from './region';
 
 const decode = async (file: File) => {
     const buffer = await file.arrayBuffer();
@@ -16,17 +18,15 @@ const decode = async (file: File) => {
 };
 
 export const Read = () => {
-    const [user, setUser] = useState<UserRow | null>(null);
+    const user = userRegion.useValue();
     const [authOpened, setAuthOpened] = useState(false);
     const [novels, setNovels] = useState<NovelRow[]>([]);
     const [opened, setOpened] = useState<NovelDetail>();
 
     useEffect(() => {
-        async function load() {
-            setUser(await loadUser());
-        }
-        load();
-    }, []);
+        readingRegion.set(!!opened);
+        return () => readingRegion.set(false);
+    }, [opened]);
 
     useEffect(() => {
         async function load() {
@@ -34,11 +34,6 @@ export const Read = () => {
         }
         if (user) load();
     }, [user]);
-
-    async function logout() {
-        await fetchApi({ path: '/api/auth/logout' });
-        setUser(await loadUser());
-    }
 
     const handleFile = async (file: File | null) => {
         if (!file) return;
@@ -92,7 +87,7 @@ export const Read = () => {
                 opened={authOpened}
                 onClose={() => setAuthOpened(false)}
                 onSuccess={(next) => {
-                    setUser(next);
+                    userRegion.set(next);
                     setAuthOpened(false);
                 }}
             />

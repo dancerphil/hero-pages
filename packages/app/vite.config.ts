@@ -3,7 +3,7 @@ import { cloudflare } from '@cloudflare/vite-plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    plugins: [react(), cloudflare({ configPath: '../../wrangler.jsonc' })],
+    plugins: [react(), cloudflare({ configPath: '../../wrangler.jsonc', persistState: { path: '../../.wrangler/state' } })],
     resolve: {
         alias: {
             '@': '/src',

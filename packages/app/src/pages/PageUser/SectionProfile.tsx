@@ -4,22 +4,23 @@ import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router';
 import type { UserRow } from '@hero-pages/account/client';
 import { fetchApi } from '@hero-pages/account/client';
+import { userRegion } from '@/regions/user';
 
-export function SectionProfile(props: { user: UserRow; onUserChange: (user: UserRow) => void; onSaved: () => void }) {
+export function SectionProfile(props: { user: UserRow; onSaved: () => void }) {
     const navigate = useNavigate();
     const [username, setUsername] = useState(props.user.username);
     const [newUid, setNewUid] = useState(props.user.uid);
 
     async function saveUsername() {
-        props.onUserChange(await fetchApi<UserRow>({ path: '/api/auth/me', method: 'PATCH', body: { username } }));
+        userRegion.set(await fetchApi<UserRow>({ path: '/api/auth/me', method: 'PATCH', body: { username } }));
         props.onSaved();
     }
 
     async function saveUid() {
         try {
             const user = await fetchApi<UserRow>({ path: '/api/auth/me/uid', method: 'PATCH', body: { uid: newUid } });
-            props.onUserChange(user);
-            navigate(`/achievement/user/${user.uid}`);
+            userRegion.set(user);
+            navigate(`/user/${user.uid}`);
         }
         catch (error) {
             notifications.show({ color: 'red', message: (error as Error).message });

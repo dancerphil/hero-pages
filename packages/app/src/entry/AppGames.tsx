@@ -1,26 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Container, Group, Text } from '@mantine/core';
 import { Route, Routes, useNavigate } from 'react-router';
-import { fetchApi, loadUser, ModalAuth, type UserRow } from '@hero-pages/account/client';
+import { ModalAuth } from '@hero-pages/account/client';
 import { PageGamesHome } from '@/pages/PageGamesHome';
 import { PageGamesRoom } from '@/pages/PageGamesRoom';
+import { logout, userRegion } from '@/regions/user';
 
 export function AppGames() {
-    const [user, setUser] = useState<UserRow | null>(null);
+    const user = userRegion.useValue();
     const [authOpened, setAuthOpened] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        async function load() {
-            setUser(await loadUser());
-        }
-        load();
-    }, []);
-
-    async function logout() {
-        await fetchApi({ path: '/api/auth/logout' });
-        setUser(await loadUser());
-    }
 
     return (
         <Container size="md" px="sm">
@@ -39,7 +28,7 @@ export function AppGames() {
             </Group>
             {user && (
                 <Routes>
-                    <Route index element={<PageGamesHome user={user} onUserChange={setUser} />} />
+                    <Route index element={<PageGamesHome user={user} />} />
                     <Route path="room/:roomId" element={<PageGamesRoom />} />
                 </Routes>
             )}
@@ -47,7 +36,7 @@ export function AppGames() {
                 opened={authOpened}
                 onClose={() => setAuthOpened(false)}
                 onSuccess={(next) => {
-                    setUser(next);
+                    userRegion.set(next);
                     setAuthOpened(false);
                 }}
             />

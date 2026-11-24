@@ -4,4 +4,5 @@ export interface UserRow {
     username: string;
     email: string | null;
     is_admin: number;
+    avatar_updated_at: string | null;
 }

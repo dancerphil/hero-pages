@@ -13,7 +13,7 @@ const PADDING = 16;
 interface ViewNovelProps {
     novel: NovelDetail;
     onBack: () => void;
-    onRename: (id: number, name: string) => void;
+    onRename: (name: string) => void;
 }
 
 export const ViewNovel = ({ novel, onBack, onRename }: ViewNovelProps) => {
@@ -91,7 +91,7 @@ export const ViewNovel = ({ novel, onBack, onRename }: ViewNovelProps) => {
                 name={novel.name}
                 percent={Math.round(index / paragraphs.length * 100)}
                 onBack={onBack}
-                onRename={name => onRename(novel.id, name)}
+                onRename={onRename}
             />
             <div ref={ref} style={{ paddingTop: offsets[index], paddingBottom: offsets[paragraphs.length] - offsets[end], paddingInline: PADDING }}>
                 {paragraphs.slice(index, end).map((paragraph, i) => (

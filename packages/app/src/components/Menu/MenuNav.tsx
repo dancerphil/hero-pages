@@ -1,17 +1,22 @@
 import { useState } from 'react';
 import { Avatar, Box, Button, Menu, UnstyledButton } from '@mantine/core';
 import type { RouteObject } from 'react-router';
-import { useNavigate } from 'react-router';
+import { matchPath, useLocation, useNavigate } from 'react-router';
 import { ModalAuth } from '@hero-pages/account/client';
 import { avatarSrc } from '@/utils/avatar';
 import { logout, userRegion } from '@/regions/user';
 
 export function MenuNav(props: { routes: RouteObject[] }) {
     const user = userRegion.useValue();
+    const { pathname } = useLocation();
     const [authOpened, setAuthOpened] = useState(false);
     const navigate = useNavigate();
 
     const paths = props.routes.map(route => (route.index ? '/' : `/${route.path?.replace(/\/\*$/, '')}`));
+
+    if (matchPath('/read/:id', pathname)) {
+        return null;
+    }
 
     return (
         <>

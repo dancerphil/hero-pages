@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Button, FileButton, Group, Stack, Text } from '@mantine/core';
 import { fetchApi, ModalAuth } from '@hero-pages/account/client';
-import type { NovelDetail, NovelRow } from '@/shared/novel';
+import type { NovelRow } from '@/shared/novel';
 import { logout, userRegion } from '@/regions/user';
 import { ListNovel } from './ListNovel';
-import { ViewNovel } from './ViewNovel';
-import { readingRegion } from './region';
 
 const decode = async (file: File) => {
     const buffer = await file.arrayBuffer();
@@ -18,15 +17,10 @@ const decode = async (file: File) => {
 };
 
 export const Read = () => {
+    const navigate = useNavigate();
     const user = userRegion.useValue();
     const [authOpened, setAuthOpened] = useState(false);
     const [novels, setNovels] = useState<NovelRow[]>([]);
-    const [opened, setOpened] = useState<NovelDetail>();
-
-    useEffect(() => {
-        readingRegion.set(!!opened);
-        return () => readingRegion.set(false);
-    }, [opened]);
 
     useEffect(() => {
         async function load() {
@@ -41,26 +35,10 @@ export const Read = () => {
         setNovels(prev => [...prev, novel]);
     };
 
-    const handleOpen = async (id: number) => {
-        setOpened(await fetchApi<NovelDetail>({ path: `/api/novels/${id}`, method: 'GET' }));
-    };
-
     const handleRename = async (id: number, name: string) => {
         await fetchApi({ path: `/api/novels/${id}`, method: 'PATCH', body: { name } });
         setNovels(prev => prev.map(item => (item.id === id ? { ...item, name } : item)));
-        setOpened(prev => prev && prev.id === id ? { ...prev, name } : prev);
     };
-
-    if (opened) {
-        return (
-            <ViewNovel
-                key={opened.id}
-                novel={opened}
-                onBack={() => setOpened(undefined)}
-                onRename={handleRename}
-            />
-        );
-    }
 
     return (
         <Stack p="md">
@@ -82,7 +60,7 @@ export const Read = () => {
                     </FileButton>
                 </Group>
             </Group>
-            <ListNovel novels={novels} onOpen={handleOpen} onRename={handleRename} />
+            <ListNovel novels={novels} onOpen={id => navigate(`/read/${id}`)} onRename={handleRename} />
             <ModalAuth
                 opened={authOpened}
                 onClose={() => setAuthOpened(false)}

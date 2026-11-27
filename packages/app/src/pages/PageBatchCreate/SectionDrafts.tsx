@@ -2,8 +2,8 @@ import { type Dispatch, type SetStateAction, useState } from 'react';
 import { Button, Checkbox } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconTrash } from '@tabler/icons-react';
-import { fetchApi } from '@hero-pages/account/client';
-import type { GeneratedAchievement, QuestionInput } from '@/shared/achievementModel';
+import { apiPostAchievementGenerateDetails, apiPostAchievementGenerateQuestion } from '@/api/achievement';
+import type { GeneratedAchievement } from '@/shared/achievementModel';
 import { CardAchievementDraft } from '@/components/Card/CardAchievementDraft';
 
 export type Draft = GeneratedAchievement & { key: number; selected: boolean };
@@ -34,15 +34,12 @@ export function SectionDrafts(props: {
         const key = `${draftKey}:${index}`;
         setRegenerating(prev => (prev.includes(key) ? prev : [...prev, key]));
         try {
-            const { question } = await fetchApi<{ question: QuestionInput }>({
-                path: '/api/achievements/generate-question',
-                body: {
-                    scope: scope.trim(),
-                    title: snapshot.title.trim(),
-                    tier: target.tier,
-                    extra: extra.trim(),
-                    exclude: snapshot.questions.map(question => question.prompt),
-                },
+            const { question } = await apiPostAchievementGenerateQuestion({
+                scope: scope.trim(),
+                title: snapshot.title.trim(),
+                tier: target.tier,
+                extra: extra.trim(),
+                exclude: snapshot.questions.map(question => question.prompt),
             });
             setDrafts(prev =>
                 prev.map(item =>
@@ -66,10 +63,7 @@ export function SectionDrafts(props: {
         if (!window.confirm(`确定重新生成「${snapshot.title}」的全部题目吗？当前题目将被替换。`)) return;
         setRegeneratingDrafts(prev => (prev.includes(draftKey) ? prev : [...prev, draftKey]));
         try {
-            const { items } = await fetchApi<{ items: GeneratedAchievement[] }>({
-                path: '/api/achievements/generate-details',
-                body: { scope: scope.trim(), titles: [snapshot.title.trim()], extra: extra.trim() },
-            });
+            const { items } = await apiPostAchievementGenerateDetails({ scope: scope.trim(), titles: [snapshot.title.trim()], extra: extra.trim() });
             const fresh = items[0]?.questions;
             if (!fresh) throw new Error('AI 返回为空');
             setDrafts(prev => prev.map(item => (item.key === draftKey ? { ...item, questions: fresh } : item)));

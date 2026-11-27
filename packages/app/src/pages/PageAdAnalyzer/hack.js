@@ -3,7 +3,7 @@
 // @name         Auto M/D/G/C
 // @namespace    https://tampermonkey.net/
 // @version      2026-11-16
-// @description  自动依次按 C→G→D→M，四个方形按钮右对齐、垂直错开固定在右上角，共用一个 1000ms 定时器；【9】开关购买规划标记
+// @description  自动依次按 C→G→D→M，四个方形按钮右对齐、垂直错开固定在右上角，共用一个 1000ms 定时器；【C9】【IC4】互斥开关，开启后按 9 派发对应 chain
 // @author       You
 // @match        https://g1tyx.github.io/antimatter-dimensions/new/
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=github.io
@@ -39,7 +39,7 @@
     // 每个 tick 内的触发顺序：反过来 → C, G, D, M
     const PRESS_ORDER = ['c', 'g', 'd', 'm'];
 
-    const PLANNER_TOP = TOP0 + KEYS.length * (SIZE + GAP_Y); // 【9】按钮位于 C 之下
+    const PLANNER_TOP = TOP0 + KEYS.length * (SIZE + GAP_Y); // C9 按钮位于 C 之下
     const PLANNER_INTERVAL = 200; // 规划标记的界面刷新间隔，单位毫秒
     // 八个维度（每次买 10 份）与计数频率（每次买 1 份）购买后的指数增量
     const PLANNER_STEPS = [3, 4, 5, 6, 8, 10, 12, 15, 1];
@@ -212,8 +212,7 @@
         api[k.key] = inst;
     });
 
-    /* ---------- 购买规划（【9】开关） ---------- */
-    let plannerOn = false;
+    /* ---------- 购买规划（C9 模式） ---------- */
 
     // 八个维度每次买 10 份，disabled 时显示的是 1/10 价格，补回 1；计数频率每次买 1 份，价格无需修正
     function readPlannerItems() {
@@ -247,7 +246,7 @@
     }
 
     function renderPlanner() {
-        if (!plannerOn) return;
+        if (mode !== 'c9') return;
         const items = readPlannerItems();
         if (!items) return;
         const prices = items.map(item => item.exp);
@@ -266,29 +265,15 @@
     const plannerTimer = setInterval(renderPlanner, PLANNER_INTERVAL);
 
     const SEQUENCE_ITEMS = SEQUENCE.split('-');
-    let sequenceQueue = [...SEQUENCE_ITEMS];
-    const sequenceEl = createSquare('', PLANNER_TOP);
-    Object.assign(sequenceEl.style, {
-        right: `${SIZE + 4}px`,
-        width: 'auto',
-        padding: '0 4px',
-        display: 'none',
-        whiteSpace: 'nowrap',
-        fontSize: '12px',
-    });
-
-    function renderSequence() {
-        sequenceEl.textContent = sequenceQueue.slice(0, 4).join(' - ');
-    }
 
     // 数字 1–8 对应维度，T 对应 Shift+T（升级计数频率），按真实键盘顺序派发 Shift 按下 → T → Shift 松开
     const SHIFT_KEY = { key: 'Shift', code: 'ShiftLeft', keyCode: 16 };
     function pressToken(token) {
         const el = targetEl();
         const shift = token === 'T';
-        const k = shift
-            ? { key: 'T', code: 'KeyT', keyCode: 84, shiftKey: true }
-            : { key: token, code: `Digit${token}`, keyCode: 48 + Number(token) };
+        let k = { key: token, code: `Digit${token}`, keyCode: 48 + Number(token) };
+        if (shift) k = { key: 'T', code: 'KeyT', keyCode: 84, shiftKey: true };
+        if (token === 'd') k = { key: 'd', code: 'KeyD', keyCode: 68 };
         if (shift) el.dispatchEvent(makeEvent('keydown', { ...SHIFT_KEY, shiftKey: true }));
         el.dispatchEvent(makeEvent('keydown', k));
         el.dispatchEvent(makeEvent('keypress', k));
@@ -296,56 +281,61 @@
         if (shift) el.dispatchEvent(makeEvent('keyup', SHIFT_KEY));
     }
 
-    // 手动按 d 时从头依次派发整个 SEQUENCE，每个之间用 setTimeout 0 衔接；再次手动按 d 从头重新开始，【9】关闭时停止
+    // 依次派发 items 中的每个按键，每个之间用 setTimeout 衔接（间隔 gap 毫秒）；再次启动会从头重新开始，切换模式时停止
     let chainId = 0;
-    function startChain() {
+    function startChain(items, gap = 0) {
         const id = ++chainId;
         let i = 0;
         (function step() {
-            if (id !== chainId || i >= SEQUENCE_ITEMS.length) return;
-            pressToken(SEQUENCE_ITEMS[i++]);
-            setTimeout(step, 0);
+            if (id !== chainId || i >= items.length) return;
+            pressToken(items[i++]);
+            setTimeout(step, gap);
         })();
     }
     function stopChain() {
         chainId++;
     }
 
-    function onManualD(e) {
-        if (e.isTrusted && e.key === 'd') startChain();
+    /* ---------- 【C9】与【IC4】：互斥开关，开启后按 9 派发对应 chain ---------- */
+    const C9_ITEMS = ['d', ...SEQUENCE_ITEMS];
+    const IC4_ITEMS = ['7', '6', '5', '4', '3', '2', '1', '8', '8', '8', '8'];
+    let mode = null; // 'c9' | 'ic4' | null
+
+    // 自动按键的合成事件不处理
+    function onNineKey(e) {
+        if (!e.isTrusted || e.key !== '9' || !mode) return;
+        if (mode === 'c9') startChain(C9_ITEMS);
+        else startChain(IC4_ITEMS, 50);
+    }
+    window.addEventListener('keydown', onNineKey, { capture: true });
+
+    const c9Btn = createSquare('C9', PLANNER_TOP);
+    const ic4Btn = createSquare('IC4', PLANNER_TOP + SIZE + GAP_Y);
+    c9Btn.title = '显示购买规划并按 9 派发 SEQUENCE（点击开关）';
+    ic4Btn.title = '按 9 派发 76543218888（点击开关）';
+
+    function paintModeBtn(btn, on) {
+        btn.style.backgroundColor = on ? '#d4f8e8' : '#ffffff';
+        btn.style.borderColor = on ? '#22a06b' : '#888888';
     }
 
-    // 9 等于按下队首；自动按键的合成事件不处理
-    function onSequenceKey(e) {
-        if (!e.isTrusted || e.key !== '9') return;
-        if (!sequenceQueue.length) return;
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        pressToken(sequenceQueue.shift());
-        renderSequence();
+    function setMode(next) {
+        mode = mode === next ? null : next;
+        stopChain();
+        clearPlannerMarks();
+        paintModeBtn(c9Btn, mode === 'c9');
+        paintModeBtn(ic4Btn, mode === 'ic4');
     }
 
-    const plannerBtn = createSquare('9', PLANNER_TOP);
-    plannerBtn.title = '显示购买规划（点击开关）';
-    plannerBtn.addEventListener('click', (e) => {
+    c9Btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        plannerOn = !plannerOn;
-        plannerBtn.style.backgroundColor = plannerOn ? '#d4f8e8' : '#ffffff';
-        plannerBtn.style.borderColor = plannerOn ? '#22a06b' : '#888888';
-        sequenceEl.style.display = plannerOn ? 'flex' : 'none';
-        if (plannerOn) {
-            sequenceQueue = [...SEQUENCE_ITEMS];
-            renderSequence();
-            window.addEventListener('keydown', onSequenceKey, { capture: true });
-            window.addEventListener('keydown', onManualD, { capture: true });
-        }
-        else {
-            clearPlannerMarks();
-            window.removeEventListener('keydown', onSequenceKey, true);
-            window.removeEventListener('keydown', onManualD, true);
-            stopChain();
-        }
+        setMode('c9');
+    });
+    ic4Btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setMode('ic4');
     });
 
     /* ---------- 全局控制 ---------- */
@@ -380,11 +370,10 @@
         }
         clearInterval(plannerTimer);
         clearPlannerMarks();
-        window.removeEventListener('keydown', onSequenceKey, true);
-        window.removeEventListener('keydown', onManualD, true);
+        window.removeEventListener('keydown', onNineKey, true);
         stopChain();
-        plannerBtn.remove();
-        sequenceEl.remove();
+        c9Btn.remove();
+        ic4Btn.remove();
         PRESS_ORDER.forEach((k) => {
             enabled[k] = false;
         });
@@ -396,6 +385,6 @@
 
     window.__mAuto = api;
 
-    console.log('右上角已注入五个方形按钮（M / D / G / C / 9），共用一个 1000ms 定时器，按 C → G → D → M 依次触发；9 开关购买规划标记。');
+    console.log('右上角已注入六个方形按钮（M / D / G / C / C9 / IC4），共用一个 1000ms 定时器，按 C → G → D → M 依次触发；C9 / IC4 互斥开关，开启后按 9 派发对应 chain。');
     console.log('控制命令示例：__mAuto.m.start() / __mAuto.d.stop() / __mAuto.startAll() / __mAuto.destroy()');
 })();

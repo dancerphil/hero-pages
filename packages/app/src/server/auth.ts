@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import type { UserRow } from '../types';
+import type { UserRow } from '@/shared/user';
 import { hashPassword, randomDigits, verifyPassword } from './crypto';
 import { consumeEmailCode, sendEmailCode, type CodePurpose } from './emailCode';
 import { createSession, deleteSession, findSessionUser, requireUser, type AppEnv } from './session';

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiGetAchievementByName } from '@/api/achievement';
 import { PageAchievement } from '@/pages/PageAchievement';
 import { PageAchievementForm } from '@/pages/PageAchievementForm';
 
@@ -12,10 +12,7 @@ export function PageNamed(props: { isAdmin: boolean }) {
 
     useEffect(() => {
         async function load() {
-            const achievement = await fetchApi<{ id: number }>({
-                path: `/api/achievements/by-name/${encodeURIComponent(name)}`,
-                method: 'GET',
-            });
+            const achievement = await apiGetAchievementByName({ name });
             setId(achievement.id);
         }
         load();

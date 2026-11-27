@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Select, Stack, Table, TextInput } from '@mantine/core';
-import { fetchApi, type UserRole } from '@hero-pages/account/client';
-import type { AdminUserRow } from '@/shared/user';
+import { apiGetAdminUsers, apiPatchAdminUser } from '@/api/admin';
+import type { AdminUserRow, UserRole } from '@/shared/user';
 import { userRegion } from '@/regions/user';
 
 const ROLE_OPTIONS = [
@@ -17,13 +17,13 @@ export const PageAdminUsers = () => {
 
     useEffect(() => {
         async function load() {
-            setUsers(await fetchApi<AdminUserRow[]>({ path: '/api/admin/users', method: 'GET' }));
+            setUsers(await apiGetAdminUsers());
         }
         load();
     }, []);
 
     const changeRole = async (target: AdminUserRow, role: UserRole) => {
-        const updated = await fetchApi<AdminUserRow>({ path: `/api/admin/users/${target.id}`, method: 'PATCH', body: { role } });
+        const updated = await apiPatchAdminUser({ id: target.id, role });
         setUsers(prev => prev.map(item => (item.id === updated.id ? updated : item)));
     };
 

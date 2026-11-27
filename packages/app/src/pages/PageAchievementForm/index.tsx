@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Stack, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiGetAchievementEdit, apiPostAchievement, apiPutAchievement } from '@/api/achievement';
 import type { GeneratedAchievement } from '@/shared/achievementModel';
 import { CardAchievementDraft } from '@/components/Card/CardAchievementDraft';
 import { normalizeAchievement } from '@/utils/achievementDraft';
@@ -13,7 +13,7 @@ export function PageAchievementForm(props: { id?: number; onSaved: (title: strin
 
     useEffect(() => {
         async function load(id: number) {
-            setDraft(await fetchApi<GeneratedAchievement>({ path: `/api/achievements/${id}/edit`, method: 'GET' }));
+            setDraft(await apiGetAchievementEdit({ id }));
         }
         if (props.id !== undefined) load(props.id);
     }, [props.id]);
@@ -23,11 +23,9 @@ export function PageAchievementForm(props: { id?: number; onSaved: (title: strin
         setError('');
         try {
             const body = normalizeAchievement(draft);
-            const { linked } = await fetchApi<{ linked?: boolean }>(
-                props.id === undefined
-                    ? { path: '/api/achievements', body }
-                    : { path: `/api/achievements/${props.id}`, method: 'PUT', body },
-            );
+            const { linked } = props.id === undefined
+                ? await apiPostAchievement(body)
+                : await apiPutAchievement({ id: props.id, ...body });
             if (linked) notifications.show({ color: 'blue', message: '已存在同一成就，已关联到已有成就' });
             props.onSaved(body.title);
         }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Anchor, Button, Group, Modal, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
-import type { UserRow } from '../types';
-import { fetchApi } from './api';
+import type { UserRow } from '@/shared/user';
+import { apiPostAuthEmailCodes, apiPostAuthLogin, apiPostAuthPasswordReset, apiPostAuthRegister } from '@/api/auth';
 
 type AuthMode = 'login' | 'register' | 'reset';
 
@@ -11,10 +11,10 @@ const TITLES: Record<AuthMode, string> = {
     reset: '重置密码',
 };
 
-const SUBMIT_PATHS: Record<AuthMode, string> = {
-    login: '/api/auth/login',
-    register: '/api/auth/register',
-    reset: '/api/auth/password-reset',
+const SUBMITS: Record<AuthMode, (input: { email: string; code: string; password: string }) => Promise<UserRow>> = {
+    login: ({ email, password }) => apiPostAuthLogin({ email, password }),
+    register: apiPostAuthRegister,
+    reset: apiPostAuthPasswordReset,
 };
 
 export function ModalAuth(props: { opened: boolean; onClose: () => void; onSuccess: (user: UserRow) => void }) {
@@ -40,7 +40,7 @@ export function ModalAuth(props: { opened: boolean; onClose: () => void; onSucce
     async function sendCode() {
         setError('');
         try {
-            await fetchApi({ path: '/api/auth/email-codes', body: { email, purpose: mode === 'register' ? 'register' : 'reset' } });
+            await apiPostAuthEmailCodes({ email, purpose: mode === 'register' ? 'register' : 'reset' });
             setCountdown(60);
         }
         catch (error_) {
@@ -52,7 +52,7 @@ export function ModalAuth(props: { opened: boolean; onClose: () => void; onSucce
         setLoading(true);
         setError('');
         try {
-            const user = await fetchApi<UserRow>({ path: SUBMIT_PATHS[mode], body: { email, code, password } });
+            const user = await SUBMITS[mode]({ email, code, password });
             props.onSuccess(user);
         }
         catch (error_) {

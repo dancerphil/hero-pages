@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
 import { type MineUnlock, parseOptions, pickChoices } from '@/shared/achievementModel';
 import type { AnswerRecord, UserPage } from '@/shared/user';
+import { requireUser, type AppEnv } from './session';
 
 const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;

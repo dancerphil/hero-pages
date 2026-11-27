@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Container, Group, Text } from '@mantine/core';
 import { Navigate, Route, Routes } from 'react-router';
-import { ModalAuth } from '@hero-pages/account/client';
+import { ModalAuth } from '@/components/Modal/ModalAuth';
 import { PageUser } from '@/pages/PageUser';
 import { logout, userRegion } from '@/regions/user';
 

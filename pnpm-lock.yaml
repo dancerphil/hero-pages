@@ -39,22 +39,6 @@ importers:
         specifier: ^4.157.0
         version: 4.157.0(@types/node@26.6.6)
 
-  packages/account:
-    dependencies:
-      '@mantine/core':
-        specifier: ^9.4.2
-        version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      hono:
-        specifier: ^4.12.31
-        version: 4.13.16
-      react:
-        specifier: ^19.2.8
-        version: 19.3.1
-    devDependencies:
-      '@types/react':
-        specifier: ^19.2.17
-        version: 19.3.0
-
   packages/app:
     dependencies:
       '@ai-sdk/deepseek':
@@ -75,15 +59,15 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.3.1)
-      '@hero-pages/account':
-        specifier: workspace:*
-        version: link:../account
       '@hero-pages/games-core':
         specifier: workspace:*
         version: link:../games-core
+      '@hero-u/fetch':
+        specifier: ^0.0.1
+        version: 0.0.1
       '@hero-u/mantine':
-        specifier: ^1.5.0
-        version: 1.5.0(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(@tabler/icons-react@3.50.0(react@19.3.1))(lodash-es@4.18.1)(react-markdown@10.1.0(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(remark-gfm@4.0.1)(rich-textarea@0.28.0(react@19.3.1))
+        specifier: ^1.6.0
+        version: 1.6.0(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(@tabler/icons-react@3.50.0(react@19.3.1))(katex@0.18.10)(lodash-es@4.18.1)(react-markdown@10.1.0(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(rehype-katex@7.0.1)(remark-gfm@4.0.1)(remark-math@6.0.0)(rich-textarea@0.28.0(react@19.3.1))
       '@mantine/core':
         specifier: ^9.4.2
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -793,16 +777,22 @@ packages:
     peerDependencies:
       eslint: ^10.4.0
 
-  '@hero-u/mantine@1.5.0':
-    resolution: {integrity: sha512-05HJ+uNQ0DkX+eOYpGpfxUS9qO1nfS+rKnGRS77x84mAALBOZ6L2zezjlI1mtvIvzEI18P1unEeKXUkFM7jA3g==}
+  '@hero-u/fetch@0.0.1':
+    resolution: {integrity: sha512-K1B3+1EPQrm+/XGUb4KAcZmeSIcovtEirLWNqFBJb3BBzIzatadeuCPlEj+JGP2YcjOo2soIPcwrlA3JbvehVg==}
+
+  '@hero-u/mantine@1.6.0':
+    resolution: {integrity: sha512-HWydltQCxjDLSRgWzT1UcwAdoDA6LK7RLyRGCGbibPQg/tmODO7BzmUUWiistsxZqAt0mCePQejJt/UA1xpYQQ==}
     peerDependencies:
       '@mantine/core': '>=8.0.0'
       '@mantine/hooks': '>=9.4.0'
       '@tabler/icons-react': '>=3.0.0'
+      katex: '>=0.18.0'
       lodash-es: '>=4.0.0'
       react: '>=19'
       react-markdown: '>=9.0.0'
+      rehype-katex: '>=7.0.0'
       remark-gfm: '>=4.0.0'
+      remark-math: '>=6.0.0'
       rich-textarea: '>=0.27.1'
 
   '@humanfs/core@0.19.2':
@@ -4377,15 +4367,20 @@ snapshots:
       - supports-color
       - typescript
 
-  '@hero-u/mantine@1.5.0(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(@tabler/icons-react@3.50.0(react@19.3.1))(lodash-es@4.18.1)(react-markdown@10.1.0(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(remark-gfm@4.0.1)(rich-textarea@0.28.0(react@19.3.1))':
+  '@hero-u/fetch@0.0.1': {}
+
+  '@hero-u/mantine@1.6.0(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(@tabler/icons-react@3.50.0(react@19.3.1))(katex@0.18.10)(lodash-es@4.18.1)(react-markdown@10.1.0(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(rehype-katex@7.0.1)(remark-gfm@4.0.1)(remark-math@6.0.0)(rich-textarea@0.28.0(react@19.3.1))':
     dependencies:
       '@mantine/core': 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/hooks': 9.7.4(react@19.3.1)
       '@tabler/icons-react': 3.50.0(react@19.3.1)
+      katex: 0.18.10
       lodash-es: 4.18.1
       react: 19.3.1
       react-markdown: 10.1.0(@types/react@19.3.0)(react@19.3.1)
+      rehype-katex: 7.0.1
       remark-gfm: 4.0.1
+      remark-math: 6.0.0
       rich-textarea: 0.28.0(react@19.3.1)
 
   '@humanfs/core@0.19.2':

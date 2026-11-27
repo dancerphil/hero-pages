@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
 import type { NovelRow } from '@/shared/novel';
+import { requireUser, type AppEnv } from './session';
 
 export const novelRoutes = new Hono<AppEnv>()
     .get('/', requireUser, async (c) => {

@@ -1,5 +1,6 @@
-import { createAuthRoutes, type AppEnv, type MergeUser } from '@hero-pages/account/server';
 import { Hono } from 'hono';
+import { createAuthRoutes, type MergeUser } from './auth';
+import type { AppEnv } from './session';
 import { achievementRoutes } from './achievement';
 import { adminRoutes } from './admin';
 import { aiRoutes } from './ai';

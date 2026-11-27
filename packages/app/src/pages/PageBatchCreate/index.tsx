@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Button, Group, NumberInput, Stack, Text, Textarea, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { fetchApi } from '@hero-pages/account/client';
-import type { GeneratedAchievement } from '@/shared/achievementModel';
+import { apiPostAchievementBatch, apiPostAchievementGenerateDetails, apiPostAchievementGenerateTitles } from '@/api/achievement';
 import { normalizeAchievement } from '@/utils/achievementDraft';
 import { type Draft, SectionDrafts } from './SectionDrafts';
 import { type NameDraft, SectionNames } from './SectionNames';
@@ -20,10 +19,7 @@ export function PageBatchCreate(props: { onDone: () => void }) {
     async function generateTitles() {
         setGeneratingTitles(true);
         try {
-            const { titles } = await fetchApi<{ titles: string[] }>({
-                path: '/api/achievements/generate-titles',
-                body: { scope: scope.trim(), count, extra: extra.trim() },
-            });
+            const { titles } = await apiPostAchievementGenerateTitles({ scope: scope.trim(), count, extra: extra.trim() });
             setNames(titles.map((text, index) => ({ key: Date.now() + index, text, selected: true })));
             setDrafts([]);
         }
@@ -39,10 +35,7 @@ export function PageBatchCreate(props: { onDone: () => void }) {
         const titles = names.filter(name => name.selected).map(name => name.text.trim()).filter(Boolean);
         setGeneratingDetails(true);
         try {
-            const { items } = await fetchApi<{ items: GeneratedAchievement[] }>({
-                path: '/api/achievements/generate-details',
-                body: { scope: scope.trim(), titles, extra: extra.trim() },
-            });
+            const { items } = await apiPostAchievementGenerateDetails({ scope: scope.trim(), titles, extra: extra.trim() });
             setDrafts(items.map((item, index) => ({ ...item, key: Date.now() + index, selected: true })));
         }
         catch (error) {
@@ -61,10 +54,7 @@ export function PageBatchCreate(props: { onDone: () => void }) {
         }
         setSaving(true);
         try {
-            const { results } = await fetchApi<{ results: { linked: boolean }[] }>({
-                path: '/api/achievements/batch',
-                body: { items },
-            });
+            const { results } = await apiPostAchievementBatch({ items });
             const linked = results.filter(result => result.linked).length;
             notifications.show({
                 color: 'green',

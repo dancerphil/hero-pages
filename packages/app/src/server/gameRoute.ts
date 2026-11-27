@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { GameType } from '@hero-pages/games-core';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
+import { requireUser, type AppEnv } from './session';
 import { LOBBY_NAME } from './gameLobby';
 import { GAME_MODULES } from './gameRoomState';
 

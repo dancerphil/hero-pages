@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Group, Image, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useNavigate } from 'react-router';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiDeleteLevel, apiGetLevels } from '@/api/level';
 import type { LevelRow } from '@/shared/level';
 
 export function PageLevels() {
@@ -10,14 +10,14 @@ export function PageLevels() {
 
     useEffect(() => {
         async function load() {
-            setLevels(await fetchApi<LevelRow[]>({ path: '/api/levels', method: 'GET' }));
+            setLevels(await apiGetLevels());
         }
         load();
     }, []);
 
     async function remove(id: number) {
         if (!window.confirm('确定删除这个关卡？')) return;
-        await fetchApi({ path: `/api/levels/${id}`, method: 'DELETE' });
+        await apiDeleteLevel({ id });
         setLevels(levels.filter(level => level.id !== id));
     }
 

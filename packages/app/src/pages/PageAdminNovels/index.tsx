@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Stack, Table } from '@mantine/core';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiGetAdminNovels } from '@/api/admin';
 import type { AdminNovelRow } from '@/shared/novel';
 
 export const PageAdminNovels = () => {
@@ -8,7 +8,7 @@ export const PageAdminNovels = () => {
 
     useEffect(() => {
         async function load() {
-            setNovels(await fetchApi<AdminNovelRow[]>({ path: '/api/admin/novels', method: 'GET' }));
+            setNovels(await apiGetAdminNovels());
         }
         load();
     }, []);

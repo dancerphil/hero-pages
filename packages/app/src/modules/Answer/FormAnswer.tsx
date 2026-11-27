@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Radio, Stack, Textarea, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiPostAchievementAnswer } from '@/api/achievement';
 import type { Tier } from '@/shared/tier';
 
 export interface AnswerQuestion {
@@ -13,9 +13,10 @@ export interface AnswerQuestion {
 
 export async function submitAnswer(input: { achievementId: number; tier: Tier; answer: string }) {
     try {
-        const { passed } = await fetchApi<{ passed: boolean }>({
-            path: `/api/achievements/${input.achievementId}/answer`,
-            body: { tier: input.tier, answer: input.answer },
+        const { passed } = await apiPostAchievementAnswer({
+            achievementId: input.achievementId,
+            tier: input.tier,
+            answer: input.answer,
         });
         notifications.show({
             color: passed ? 'green' : 'red',

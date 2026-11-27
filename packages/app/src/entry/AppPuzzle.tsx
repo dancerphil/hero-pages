@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Container, Group, Text } from '@mantine/core';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
-import { ModalAuth } from '@hero-pages/account/client';
+import { ModalAuth } from '@/components/Modal/ModalAuth';
 import { PageLevels } from '@/pages/PageLevels';
 import { PageNewLevel } from '@/pages/PageNewLevel';
 import { PagePlay } from '@/pages/PagePlay';

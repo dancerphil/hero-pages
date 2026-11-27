@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Modal, Select, Stack, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiGetAchievementTitles, apiPostAchievementMerge } from '@/api/achievement';
 
 export function ModalMerge(props: { sourceId: number; sourceTitle: string; onClose: () => void; onMerged: (title: string) => void }) {
     const [titles, setTitles] = useState<{ id: number; title: string }[]>([]);
@@ -10,7 +10,7 @@ export function ModalMerge(props: { sourceId: number; sourceTitle: string; onClo
 
     useEffect(() => {
         async function load() {
-            const items = await fetchApi<{ id: number; title: string }[]>({ path: '/api/achievements/titles', method: 'GET' });
+            const items = await apiGetAchievementTitles();
             setTitles(items.filter(item => item.id !== props.sourceId));
         }
         load();
@@ -21,10 +21,7 @@ export function ModalMerge(props: { sourceId: number; sourceTitle: string; onClo
         try {
             const target = titles.find(item => String(item.id) === targetId);
             if (!target) throw new Error('请选择要合并到的成就');
-            await fetchApi({
-                path: `/api/achievements/${props.sourceId}/merge`,
-                body: { targetId: target.id },
-            });
+            await apiPostAchievementMerge({ sourceId: props.sourceId, targetId: target.id });
             notifications.show({ color: 'green', message: `已合并《${props.sourceTitle}》` });
             props.onMerged(target.title);
         }

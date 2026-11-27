@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Avatar, Box, Button, Menu, UnstyledButton } from '@mantine/core';
 import type { RouteObject } from 'react-router';
 import { matchPath, useLocation, useNavigate } from 'react-router';
-import { ModalAuth } from '@hero-pages/account/client';
+import { ModalAuth } from '@/components/Modal/ModalAuth';
 import { avatarSrc } from '@/utils/avatar';
 import { logout, userRegion } from '@/regions/user';
 

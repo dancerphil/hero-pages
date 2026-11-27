@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
 import { TIERS } from '@/shared/tier';
 import { buildDetailsPrompt, buildQuestionPrompt, buildTitlesPrompt } from '@/ai/prompt';
 import { normalizeAchievements, normalizeTitles } from '@/ai/normalize';
 import { validateQuestions, type GeneratedAchievement } from '@/shared/achievementModel';
+import { requireUser, type AppEnv } from './session';
 import { chat } from './chat';
 import { createAchievement } from './achievementStore';
 

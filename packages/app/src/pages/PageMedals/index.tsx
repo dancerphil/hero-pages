@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Card, SimpleGrid, Stack, Table, Tabs, Text, TextInput, Title } from '@mantine/core';
 import { useParams } from 'react-router';
-import type { UserRow } from '@hero-pages/account/client';
-import { fetchApi } from '@hero-pages/account/client';
-import type { AnswerRecord, UserPage } from '@/shared/user';
+import type { AnswerRecord, UserPage, UserRow } from '@/shared/user';
+import { apiGetUser, apiGetUserAnswers } from '@/api/user';
 import { ModalAnswer } from '@/modules/Answer/ModalAnswer';
 import { BadgeTier } from '@/ui/BadgeTier';
 import { TIERS_DESC } from '@/utils/tier';
@@ -20,8 +19,8 @@ export function PageMedals(props: { user: UserRow }) {
 
     useEffect(() => {
         async function load() {
-            setPage(await fetchApi<UserPage>({ path: `/api/users/${uid}`, method: 'GET' }));
-            if (isSelf) setAnswers(await fetchApi<AnswerRecord[]>({ path: `/api/users/${uid}/answers`, method: 'GET' }));
+            setPage(await apiGetUser({ uid }));
+            if (isSelf) setAnswers(await apiGetUserAnswers({ uid }));
         }
         load();
     }, [uid, isSelf, reloadKey]);

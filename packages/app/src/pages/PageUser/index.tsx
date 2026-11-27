@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react';
 import { Avatar, Button, FileButton, Group, Stack, Text, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router';
-import type { UserRow } from '@hero-pages/account/client';
-import { fetchApi } from '@hero-pages/account/client';
-import type { UserPage } from '@/shared/user';
+import { apiGetUser, apiPutUserAvatar } from '@/api/user';
+import type { UserPage, UserRow } from '@/shared/user';
 import { avatarSrc } from '@/utils/avatar';
 import { loadUser } from '@/regions/user';
 import { SectionProfile } from './SectionProfile';
@@ -17,7 +16,7 @@ export function PageUser(props: { user: UserRow }) {
 
     useEffect(() => {
         async function load() {
-            setPage(await fetchApi<UserPage>({ path: `/api/users/${uid}`, method: 'GET' }));
+            setPage(await apiGetUser({ uid }));
         }
         load();
     }, [uid, reloadKey]);
@@ -29,7 +28,7 @@ export function PageUser(props: { user: UserRow }) {
         const body = new FormData();
         body.append('avatar', file);
         try {
-            await fetchApi({ path: '/api/users/me/avatar', method: 'PUT', body });
+            await apiPutUserAvatar(body);
             await loadUser();
             setReloadKey(key => key + 1);
         }

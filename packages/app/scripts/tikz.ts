@@ -5,7 +5,7 @@ import url from 'node:url';
 import { dvi2svg, load, tex } from 'node-tikzjax';
 
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const assetsDir = path.join(dirname, '../src/pages/PageCategory/assets');
+const assetsDir = path.join(dirname, '../src/pages/PageMath/articles/assets');
 const require = createRequire(import.meta.url);
 const fontDir = path.join(path.dirname(require.resolve('node-tikzjax/package.json')), 'css/bakoma/ttf');
 

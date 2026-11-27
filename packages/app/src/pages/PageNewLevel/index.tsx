@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, FileInput, Group, Image, NumberInput, Stack, Text, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiPostLevel } from '@/api/level';
 
 export function PageNewLevel() {
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ export function PageNewLevel() {
         body.append('cols', String(cols));
         body.append('rows', String(rows));
         try {
-            await fetchApi({ path: '/api/levels', body });
+            await apiPostLevel(body);
             notifications.show({ message: '关卡已创建' });
             navigate('/puzzle');
         }

@@ -1,20 +1,20 @@
-import { fetchApi } from '@hero-pages/account/client';
+import { apiGetNovels, apiGetNovelText, apiPatchNovel, apiPostNovel } from '@/api/novel';
 import type { NovelRow } from '@/shared/novel';
 import { getNovel, getNovelRows, putNovel, putNovelRow } from './db';
 
 export async function uploadNovel(row: NovelRow) {
     const novel = await getNovel(row.uuid);
     if (!novel) throw new Error(`本地小说缺少正文: ${row.uuid}`);
-    await fetchApi({ path: '/api/novels', body: { ...row, text: novel.text } });
+    await apiPostNovel({ ...row, text: novel.text });
 }
 
 export async function downloadNovel(row: NovelRow) {
-    const { text } = await fetchApi<{ text: string }>({ path: `/api/novels/${row.uuid}/text`, method: 'GET' });
+    const { text } = await apiGetNovelText({ uuid: row.uuid });
     await putNovel(row, text);
 }
 
 async function doSync() {
-    const remote = await fetchApi<NovelRow[]>({ path: '/api/novels', method: 'GET' });
+    const remote = await apiGetNovels();
     const local = await getNovelRows();
     const localByUuid = new Map(local.map(row => [row.uuid, row]));
     const remoteByUuid = new Map(remote.map(row => [row.uuid, row]));
@@ -23,7 +23,7 @@ async function doSync() {
         ...local.map(async (row) => {
             const server = remoteByUuid.get(row.uuid);
             if (server && row.updatedAt > server.updatedAt) {
-                await fetchApi({ path: `/api/novels/${row.uuid}`, method: 'PATCH', body: row });
+                await apiPatchNovel(row);
             }
         }),
         ...remote.map(async (row) => {

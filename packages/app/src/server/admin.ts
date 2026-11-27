@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { requireRole, type AppEnv, type UserRole } from '@hero-pages/account/server';
-import type { AdminUserRow } from '@/shared/user';
+import type { AdminUserRow, UserRole } from '@/shared/user';
 import type { AdminNovelRow } from '@/shared/novel';
+import { requireRole, type AppEnv } from './session';
 
 const ROLES: UserRole[] = ['admin', 'vip', 'user'];
 

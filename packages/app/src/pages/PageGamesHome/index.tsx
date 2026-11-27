@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Button, Group, Stack, Text, TextInput, Title } from '@mantine/core';
 import { useNavigate } from 'react-router';
 import type { GameType, LobbyRoom } from '@hero-pages/games-core';
-import type { UserRow } from '@hero-pages/account/client';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiPatchAuthMe } from '@/api/auth';
+import { apiPostGameRoom } from '@/api/game';
+import type { UserRow } from '@/shared/user';
 import { GAMES } from '@/constants/games';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { userRegion } from '@/regions/user';
@@ -16,12 +17,12 @@ export function PageGamesHome(props: { user: UserRow }) {
     const { data: rooms } = useGameSocket<LobbyRoom[]>('/api/games/lobby/ws');
 
     async function createRoom(game: GameType, ai: boolean) {
-        const { id } = await fetchApi<{ id: string }>({ path: '/api/games/rooms', body: { game, ai } });
+        const { id } = await apiPostGameRoom({ game, ai });
         navigate(`/games/room/${id}`);
     }
 
     async function saveUsername() {
-        userRegion.set(await fetchApi<UserRow>({ path: '/api/auth/me', method: 'PATCH', body: { username } }));
+        userRegion.set(await apiPatchAuthMe({ username }));
     }
 
     return (

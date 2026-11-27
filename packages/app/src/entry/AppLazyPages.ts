@@ -36,9 +36,9 @@ export const PageCashFlow = lazy(async () => {
     const m = await import('@/pages/PageCashFlow');
     return { default: m.PageCashFlow };
 });
-export const PageCategory = lazy(async () => {
-    const m = await import('@/pages/PageCategory');
-    return { default: m.PageCategory };
+export const PageMath = lazy(async () => {
+    const m = await import('@/pages/PageMath');
+    return { default: m.PageMath };
 });
 export const PageColor = lazy(async () => {
     const m = await import('@/pages/PageColor');

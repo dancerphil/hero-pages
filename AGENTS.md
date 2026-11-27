@@ -1,5 +1,2 @@
 - 组件文件用类型前缀（ButtonAdd 而非 AddButton）
 - 定义函数时尽量使用一个参数，合理情形下可以使用两个
-- 在需要查看文档时访问：
-  - Mantine: https://mantine.dev/llms.txt
-  - Cloudflare Workers: https://developers.cloudflare.com/workers/llms.txt

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
 import type { Tier } from '@/shared/tier';
 import { parseOptions, type QuestionRow } from '@/shared/achievementModel';
+import { requireUser, type AppEnv } from './session';
 import { judgeAnswer, PASS_CONFIDENCE } from './jev';
 
 export const answerRoutes = new Hono<AppEnv>()

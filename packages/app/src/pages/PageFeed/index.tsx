@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Stack, Text } from '@mantine/core';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiGetAchievements } from '@/api/achievement';
 import type { FeedQuestion } from '@/shared/achievementModel';
 import type { Tier } from '@/shared/tier';
 import { CardQuestion } from '@/modules/Feed/CardQuestion';
@@ -11,7 +11,7 @@ export function PageFeed(props: { onEdit: (achievementTitle: string) => void; on
 
     useEffect(() => {
         async function load() {
-            setItems(await fetchApi<FeedQuestion[]>({ path: '/api/achievements', method: 'GET' }));
+            setItems(await apiGetAchievements());
         }
         load();
     }, []);

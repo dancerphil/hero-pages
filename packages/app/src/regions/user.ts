@@ -1,11 +1,12 @@
 import { createRegion } from 'region-react';
-import { fetchApi, fetchUser, type UserRow } from '@hero-pages/account/client';
+import { apiPostAuthLogout, fetchUser } from '@/api/auth';
+import type { UserRow } from '@/shared/user';
 
 export const userRegion = createRegion<UserRow>();
 
 export const loadUser = userRegion.loadBy(fetchUser);
 
 export async function logout() {
-    await fetchApi({ path: '/api/auth/logout' });
+    await apiPostAuthLogout();
     await loadUser();
 }

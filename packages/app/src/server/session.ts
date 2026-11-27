@@ -1,7 +1,7 @@
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
-import type { UserRole, UserRow } from '../types';
+import type { UserRole, UserRow } from '@/shared/user';
 import { randomToken } from './crypto';
 
 export interface AppEnv {

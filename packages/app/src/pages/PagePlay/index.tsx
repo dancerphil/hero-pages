@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Group, Loader, Stack, Text, Title } from '@mantine/core';
 import { useParams } from 'react-router';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiGetLevel } from '@/api/level';
 import type { LevelRow } from '@/shared/level';
 import { CanvasPuzzle } from '@/components/Canvas/CanvasPuzzle';
 
@@ -13,7 +13,7 @@ export function PagePlay() {
 
     useEffect(() => {
         async function load() {
-            setLevel(await fetchApi<LevelRow>({ path: `/api/levels/${id}`, method: 'GET' }));
+            setLevel(await apiGetLevel({ id }));
         }
         load();
     }, [id]);

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Button, Container, Group, Text } from '@mantine/core';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
-import { fetchApi, ModalAuth } from '@hero-pages/account/client';
+import { apiGetUser } from '@/api/user';
+import { ModalAuth } from '@/components/Modal/ModalAuth';
 import type { UserPage } from '@/shared/user';
 import type { Tier } from '@/shared/tier';
 import { BadgeCount } from '@/components/Badge/BadgeCount';
@@ -13,7 +14,7 @@ import { TIERS_DESC } from '@/utils/tier';
 import { logout, userRegion } from '@/regions/user';
 
 async function fetchUnlocks(uid: string) {
-    const page = await fetchApi<UserPage>({ path: `/api/users/${uid}`, method: 'GET' });
+    const page = await apiGetUser({ uid });
     return page.unlocks;
 }
 

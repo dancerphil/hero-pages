@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Button, Group, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router';
-import type { UserRow } from '@hero-pages/account/client';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiPatchAuthMe, apiPatchAuthMeUid } from '@/api/auth';
+import type { UserRow } from '@/shared/user';
 import { userRegion } from '@/regions/user';
 
 export function SectionProfile(props: { user: UserRow; onSaved: () => void }) {
@@ -12,13 +12,13 @@ export function SectionProfile(props: { user: UserRow; onSaved: () => void }) {
     const [newUid, setNewUid] = useState(props.user.uid);
 
     async function saveUsername() {
-        userRegion.set(await fetchApi<UserRow>({ path: '/api/auth/me', method: 'PATCH', body: { username } }));
+        userRegion.set(await apiPatchAuthMe({ username }));
         props.onSaved();
     }
 
     async function saveUid() {
         try {
-            const user = await fetchApi<UserRow>({ path: '/api/auth/me/uid', method: 'PATCH', body: { uid: newUid } });
+            const user = await apiPatchAuthMeUid({ uid: newUid });
             userRegion.set(user);
             navigate(`/user/${user.uid}`);
         }

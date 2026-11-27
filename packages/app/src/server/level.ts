@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
 import type { LevelRow } from '@/shared/level';
+import { requireUser, type AppEnv } from './session';
 
 const LEVEL_COLUMNS = 'id, name, rows, cols, created_at AS createdAt';
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];

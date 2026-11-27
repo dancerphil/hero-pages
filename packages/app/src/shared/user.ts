@@ -1,4 +1,14 @@
-import type { UserRole } from '@hero-pages/account/types';
+export type UserRole = 'admin' | 'vip' | 'user';
+
+export interface UserRow {
+    id: number;
+    uid: string;
+    username: string;
+    email: string | null;
+    role: UserRole;
+    avatar_updated_at: string | null;
+}
+
 import type { MineUnlock } from './achievementModel';
 import type { Tier } from './tier';
 

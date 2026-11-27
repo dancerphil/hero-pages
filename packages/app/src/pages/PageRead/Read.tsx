@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button, FileButton, Group, Stack } from '@mantine/core';
 import type { NovelRow } from '@/shared/novel';
@@ -22,21 +22,19 @@ export const Read = () => {
     const user = userRegion.useValue();
     const [novels, setNovels] = useState<NovelRow[]>([]);
     const [remoteNovels, setRemoteNovels] = useState<NovelRow[]>([]);
-
-    const refresh = useCallback(async () => {
-        setNovels(await getNovelRows());
-        if (user) {
-            setRemoteNovels(await syncNovels());
-            setNovels(await getNovelRows());
-        }
-        else {
-            setRemoteNovels([]);
-        }
-    }, [user]);
+    const [version, setVersion] = useState(0);
+    const refresh = () => setVersion(value => value + 1);
 
     useEffect(() => {
-        refresh();
-    }, [refresh]);
+        async function load() {
+            setNovels(await getNovelRows());
+            if (user) {
+                setRemoteNovels(await syncNovels());
+                setNovels(await getNovelRows());
+            }
+        }
+        load();
+    }, [user, version]);
 
     const handleFile = async (file: File | null) => {
         if (!file) return;
@@ -59,11 +57,12 @@ export const Read = () => {
         refresh();
     };
 
+    const shownRemoteNovels = user ? remoteNovels : [];
     const localUuids = new Set(novels.map(row => row.uuid));
-    const remoteUuids = new Set(remoteNovels.map(row => row.uuid));
+    const remoteUuids = new Set(shownRemoteNovels.map(row => row.uuid));
     const items: NovelItem[] = [
         ...novels.map(row => ({ row, local: true, remote: remoteUuids.has(row.uuid) })),
-        ...remoteNovels.filter(row => !localUuids.has(row.uuid)).map(row => ({ row, local: false, remote: true })),
+        ...shownRemoteNovels.filter(row => !localUuids.has(row.uuid)).map(row => ({ row, local: false, remote: true })),
     ].toSorted((a, b) => b.row.updatedAt - a.row.updatedAt);
 
     return (

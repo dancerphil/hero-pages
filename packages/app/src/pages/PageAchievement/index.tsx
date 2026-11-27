@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Badge, Button, Group, Stack, Text, Title } from '@mantine/core';
-import { fetchApi } from '@hero-pages/account/client';
+import { apiDeleteAchievement, apiGetAchievement } from '@/api/achievement';
 import type { AchievementDetail } from '@/shared/achievementModel';
 import { ModalAnswer } from '@/modules/Answer/ModalAnswer';
 import { BadgeTier } from '@/ui/BadgeTier';
@@ -23,14 +23,14 @@ export function PageAchievement(props: {
 
     useEffect(() => {
         async function load() {
-            setDetail(await fetchApi<AchievementDetail>({ path: `/api/achievements/${props.id}`, method: 'GET' }));
+            setDetail(await apiGetAchievement({ id: props.id }));
         }
         load();
     }, [props.id, reloadKey]);
 
     async function remove() {
         if (!window.confirm('确定删除这个成就吗？已获得的记录也会一并删除。')) return;
-        await fetchApi({ path: `/api/achievements/${props.id}`, method: 'DELETE' });
+        await apiDeleteAchievement({ id: props.id });
         props.onDeleted();
     }
 

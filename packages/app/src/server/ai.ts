@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { requireUser, type AppEnv } from '@hero-pages/account/server';
+import { requireUser, type AppEnv } from './session';
 
 export const aiRoutes = new Hono<AppEnv>().all('/deepseek/*', requireUser, (c) => {
     const path = c.req.path.replace('/api/ai/deepseek', '');
